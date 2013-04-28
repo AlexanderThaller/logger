@@ -2,6 +2,7 @@ package logger
 
 import (
 	"errors"
+	"fmt"
 	"log"
 )
 
@@ -31,13 +32,14 @@ func SetLevel(lv int) (er error) {
 
 // Print a message in the style ERROR: Message if the lvl is or is bigger than
 // LvlError
-func Error(ms string) (ou string) {
+func Error(v ...interface{}) (ou string) {
 	// Return if lvl is below error
 	if lvl < LvlError {
 		return
 	}
 
 	p := "ERROR: "
+	ms := fmt.Sprint(v...)
 
 	if len(ms) == 0 {
 		p = "ERROR"
@@ -51,13 +53,14 @@ func Error(ms string) (ou string) {
 
 // Print a message in the style INFO : Message if the lvl is or is bigger than
 // LvlInfo
-func Info(ms string) (ou string) {
+func Info(v ...interface{}) (ou string) {
 	// Return if lvl is below info
 	if lvl < LvlInfo {
 		return
 	}
 
 	p := "INFO : "
+	ms := fmt.Sprint(v...)
 
 	if len(ms) == 0 {
 		p = "INFO"
@@ -71,13 +74,14 @@ func Info(ms string) (ou string) {
 
 // Print a message in the style DEBUG: Message if the lvl is or is bigger than
 // LvlDebug
-func Debug(ms string) (ou string) {
+func Debug(v ...interface{}) (ou string) {
 	// Return if lvl is below debug
 	if lvl < LvlDebug {
 		return
 	}
 
 	p := "DEBUG: "
+	ms := fmt.Sprint(v...)
 
 	if len(ms) == 0 {
 		p = "DEBUG"

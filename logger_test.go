@@ -113,4 +113,12 @@ func Test_Debug(t *testing.T) {
 			t.Fail()
 		}
 	}
+
+	v := "DEBUG: 1 2 3 4 5 6 7 8 9 0"
+	o := Debug(1, 2, 3, 4, 5, 6, 7, 8, 9, 0)
+	if o != v {
+		log.Print("Level: ", lvl)
+		log.Print("GOT: '", o, "', EXPECED: '", v, "'")
+		t.Fail()
+	}
 }

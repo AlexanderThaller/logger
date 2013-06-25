@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"misc"
+	"os"
 )
 
 const (
@@ -34,7 +34,7 @@ func SetLevel(lv int) (err error) {
 
 // Sets the output to use the specified logfile.
 func SetLogfile(pa string) (err error) {
-	f, err := misc.AppendFile(pa)
+	f, err := appendFile(pa)
 	if err != nil {
 		return
 	}
@@ -103,6 +103,19 @@ func Debug(v ...interface{}) (out string) {
 
 	out = p + ms
 	log.Print(out)
+
+	return
+}
+
+// If the file exists append if not create
+func appendFile(pat string) (fil *os.File, err error) {
+	fil, err = os.OpenFile(pat, os.O_RDWR|os.O_APPEND, 0666)
+	if err != nil {
+		fil, err = os.Create(pat)
+		if err != nil {
+			return
+		}
+	}
 
 	return
 }

@@ -15,7 +15,8 @@ const (
 
 var lvl = 1
 
-func SetLevel(lv int) (er error) {
+// Set the level of the logger.
+func SetLevel(lv int) (err error) {
 	switch lv {
 	case LvlError:
 		lvl = LvlError
@@ -24,7 +25,7 @@ func SetLevel(lv int) (er error) {
 	case LvlDebug:
 		lvl = LvlDebug
 	default:
-		er = errors.New("Not a valid level.")
+		err = errors.New("Not a valid level.")
 		return
 	}
 
@@ -45,7 +46,7 @@ func SetLogfile(pa string) (err error) {
 
 // Print a message in the style ERROR: Message if the lvl is or is bigger than
 // LvlError
-func Error(v ...interface{}) (ou string) {
+func Error(v ...interface{}) (out string) {
 	// Return if lvl is below error
 	if lvl < LvlError {
 		return
@@ -58,15 +59,15 @@ func Error(v ...interface{}) (ou string) {
 		p = "ERROR"
 	}
 
-	ou = p + ms
-	log.Print(ou)
+	out = p + ms
+	log.Print(out)
 
 	return
 }
 
 // Print a message in the style INFO : Message if the lvl is or is bigger than
 // LvlInfo
-func Info(v ...interface{}) (ou string) {
+func Info(v ...interface{}) (out string) {
 	// Return if lvl is below info
 	if lvl < LvlInfo {
 		return
@@ -79,15 +80,15 @@ func Info(v ...interface{}) (ou string) {
 		p = "INFO"
 	}
 
-	ou = p + ms
-	log.Print(ou)
+	out = p + ms
+	log.Print(out)
 
 	return
 }
 
 // Print a message in the style DEBUG: Message if the lvl is or is bigger than
 // LvlDebug
-func Debug(v ...interface{}) (ou string) {
+func Debug(v ...interface{}) (out string) {
 	// Return if lvl is below debug
 	if lvl < LvlDebug {
 		return
@@ -100,8 +101,8 @@ func Debug(v ...interface{}) (ou string) {
 		p = "DEBUG"
 	}
 
-	ou = p + ms
-	log.Print(ou)
+	out = p + ms
+	log.Print(out)
 
 	return
 }

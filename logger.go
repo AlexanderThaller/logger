@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"misc"
 )
 
 const (
@@ -26,6 +27,18 @@ func SetLevel(lv int) (er error) {
 		er = errors.New("Not a valid level.")
 		return
 	}
+
+	return
+}
+
+// Sets the output to use the specified logfile.
+func SetLogfile(pa string) (err error) {
+	f, err := misc.AppendFile(pa)
+	if err != nil {
+		return
+	}
+
+	log.SetOutput(f)
 
 	return
 }

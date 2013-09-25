@@ -1,124 +1,86 @@
 package logger
 
 import (
-	"log"
-	"strconv"
 	"testing"
 )
 
-func Test_SetLevel(t *testing.T) {
-	m := map[int]string{
-		-1:       "Not a valid level.",
-		-100:     "Not a valid level.",
-		LvlError: "",
-		LvlInfo:  "",
-		LvlDebug: "",
-		3:        "Not a valid level.",
-		4:        "Not a valid level.",
-	}
+func init() {
+	SetLevel("logger.Test", Debug)
+}
+
+func Test_GetLevel(t *testing.T) {
+	n := Logger("logger.Test.GetLevel")
+
+	InfoM(n, "Starting test")
+	m := make(map[Logger]Priority)
+	m[""] = defpriority
+	m["."] = defpriority
+	m["Test"] = defpriority
+	m[".Test"] = defpriority
+
+	SetLevel("Test2", Emergency)
+	m["Test2"] = Emergency
+	m["Test2.Test"] = Emergency
+	m["Test2.Test.Test"] = Emergency
+	m["Test2.Test.Test.Test"] = Emergency
+	m["Test2.Test.Test.Test.Test"] = Emergency
+	m["Test2.Test.Test.Test.Test.Test"] = Emergency
 
 	for k, v := range m {
-		lvl := k
-
-		var o string
-		e := SetLevel(lvl)
-
-		if e == nil {
-			o = ""
-		} else {
-			o = e.Error()
-		}
-
+		o := GetLevel(k)
 		if o != v {
-			log.Print("Level: ", lvl)
-			log.Print("GOT: '", o, "', EXPECED: '", v, "'")
+			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
 	}
 }
 
-func Test_Error(t *testing.T) {
-	m := [][]string{
-		{"ERROR: Test", "0", "Test"},
-		{"ERROR: Test", "1", "Test"},
-		{"ERROR: Test", "2", "Test"},
-		{"ERROR", "2", ""},
-	}
+func Test_getParentLevel(t *testing.T) {
+	n := Logger("logger.Test.getParentLevel")
 
-	for i := range m {
-		a := m[i]
+	InfoM(n, "Starting test")
+	m := make(map[Logger]Priority)
+	m["."] = defpriority
+	m["Test"] = defpriority
+	m["Test.Test"] = defpriority
 
-		lvl, _ := strconv.Atoi(a[1])
-		msg := a[2]
+	SetLevel("Test2", Emergency)
+	m["Test2"] = defpriority
+	m["Test2.Test"] = Emergency
 
-		SetLevel(lvl)
-
-		v := a[0]
-		o := Error(msg)
+	for k, v := range m {
+		o := getParentLevel(k)
 		if o != v {
-			log.Print("Level: ", lvl)
-			log.Print("GOT: '", o, "', EXPECED: '", v, "'")
+			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
 	}
 }
 
-func Test_Info(t *testing.T) {
-	m := [][]string{
-		{"", "0", "Test"},
-		{"INFO : Test", "1", "Test"},
-		{"INFO : Test", "2", "Test"},
-		{"INFO", "2", ""},
+func Test_getParent(t *testing.T) {
+	n := Logger("logger.Test.getParent")
+
+	InfoM(n, "Starting test")
+	m := [][]Logger{
+		{"", "."},
+		{".Test", "."},
+		{".", "."},
+		{"Test", "."},
+		{"Test.Test", "Test"},
+		{"Test.Test.Test", "Test.Test"},
+		{"Test.Test.Test.Test", "Test.Test.Test"},
 	}
 
 	for i := range m {
 		a := m[i]
 
-		lvl, _ := strconv.Atoi(a[1])
-		msg := a[2]
+		k := a[0]
+		v := a[1]
 
-		SetLevel(lvl)
-
-		v := a[0]
-		o := Info(msg)
+		o := getParent(k)
 		if o != v {
-			log.Print("Level: ", lvl)
-			log.Print("GOT: '", o, "', EXPECED: '", v, "'")
+			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
-	}
-}
-
-func Test_Debug(t *testing.T) {
-	m := [][]string{
-		{"", "0", "Test"},
-		{"", "1", "Test"},
-		{"DEBUG: Test", "2", "Test"},
-		{"DEBUG", "2", ""},
-	}
-
-	for i := range m {
-		a := m[i]
-
-		lvl, _ := strconv.Atoi(a[1])
-		msg := a[2]
-
-		SetLevel(lvl)
-
-		v := a[0]
-		o := Debug(msg)
-		if o != v {
-			log.Print("Level: ", lvl)
-			log.Print("GOT: '", o, "', EXPECED: '", v, "'")
-			t.Fail()
-		}
-	}
-
-	v := "DEBUG: 1 2 3 4 5 6 7 8 9 0"
-	o := Debug(1, 2, 3, 4, 5, 6, 7, 8, 9, 0)
-	if o != v {
-		log.Print("Level: ", lvl)
-		log.Print("GOT: '", o, "', EXPECED: '", v, "'")
-		t.Fail()
 	}
 }

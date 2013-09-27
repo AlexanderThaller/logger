@@ -47,7 +47,7 @@ const (
 
 var (
 	format     = "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
-	timeFormat = time.RFC3339
+	timeformat = time.RFC3339
 
 	priorities     map[Priority]string
 	loggers        map[Logger]Priority
@@ -158,7 +158,7 @@ func SetFormat(fo string) (err error) {
 // Set the timeformat that will be used to format the time in the format.
 // The default format is: RFC3339
 func SetTimeFormat(fo string) (err error) {
-	timeFormat = fo
+	timeformat = fo
 	return
 }
 
@@ -171,7 +171,7 @@ func LogM(lo Logger, pr Priority, me ...interface{}) {
 	}
 
 	m := new(message)
-	m.Time = time.Now().Format(timeFormat)
+	m.Time = time.Now().Format(timeformat)
 	m.Logger = string(lo)
 	m.Priority = priorities[pr]
 	m.Message = fmt.Sprint(me...)

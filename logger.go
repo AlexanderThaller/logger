@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+// Format represents the format which will be used to print the message
+// for an logger.
+type Format string
+
 // Loggers represent different lognames and priorities. They can have
 // parents and child loggers which will inherit the priority of the
 // parent if it has none. The hirachy of loggers is represented through
@@ -18,10 +22,17 @@ import (
 type Logger string
 
 type message struct {
-	Time     string
-	Logger   string
+	Time string
+	Logger
 	Priority string
 	Message  string
+}
+
+type logger struct {
+	Logger
+	Priority
+	Format
+	TimeFormat string
 }
 
 // Priorities define how important a log message is. Loggers will output
@@ -46,8 +57,8 @@ const (
 )
 
 var (
-	format     = "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
-	timeformat = time.RFC3339
+	format     Format = "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
+	timeformat        = time.RFC3339
 
 	priorities     map[Priority]string
 	loggers        map[Logger]Priority
@@ -143,9 +154,9 @@ func getParent(lo Logger) (log Logger) {
 // Message: The output message.
 // The default Format is:
 // "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
-func SetFormat(fo string) (err error) {
+func SetFormat(fo Format) (err error) {
 	t := template.New("FormatTemplate")
-	t, err = t.Parse(format)
+	t, err = t.Parse(string(format))
 	if err != nil {
 		return
 	}
@@ -172,7 +183,7 @@ func LogM(lo Logger, pr Priority, me ...interface{}) {
 
 	m := new(message)
 	m.Time = time.Now().Format(timeformat)
-	m.Logger = string(lo)
+	m.Logger = lo
 	m.Priority = priorities[pr]
 	m.Message = fmt.Sprint(me...)
 

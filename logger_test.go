@@ -28,7 +28,9 @@ func Test_GetLevel(t *testing.T) {
 			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
+		DebugM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 	}
+	InfoM(n, "Finished test")
 }
 
 func Test_getParentLevel(t *testing.T) {
@@ -50,7 +52,9 @@ func Test_getParentLevel(t *testing.T) {
 			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
+		DebugM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 	}
+	InfoM(n, "Finished test")
 }
 
 func Test_getParent(t *testing.T) {
@@ -78,5 +82,7 @@ func Test_getParent(t *testing.T) {
 			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
+		DebugM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 	}
+	InfoM(n, "Finished test")
 }

@@ -61,13 +61,19 @@ var (
 	timeformat        = time.RFC3339
 
 	priorities     map[Priority]string
-	loggers        map[Logger]Priority
+	loggers        map[Logger]logger
 	formattemplate template.Template
 )
 
 func init() {
-	loggers = make(map[Logger]Priority)
-	loggers[defroot] = defpriority
+	loggers = make(map[Logger]logger)
+	l := logger{Logger: defroot,
+		Priority:   defpriority,
+		Format:     format,
+		TimeFormat: timeformat,
+	}
+
+	loggers[defroot] = l
 
 	priorities = make(map[Priority]string)
 	priorities[Debug] = "Debug"
@@ -78,8 +84,6 @@ func init() {
 	priorities[Critical] = "Critical"
 	priorities[Alert] = "Alert"
 	priorities[Emergency] = "Emergency"
-
-	SetFormat(format)
 }
 
 // Set the priority level of the logger.
@@ -97,14 +101,22 @@ func SetLevel(lo Logger, pr Priority) (err error) {
 		return
 	}
 
-	loggers[lo] = pr
+	l := logger{Logger: lo,
+		Priority:   pr,
+		Format:     format,
+		TimeFormat: timeformat,
+	}
+
+	loggers[lo] = l
 	return
 }
 
 // Get the priority level of the logger.
 func GetLevel(lo Logger) (pri Priority) {
-	pri, e := loggers[lo]
-	if !e {
+	l, e := loggers[lo]
+	if e {
+		pri = l.Priority
+	} else {
 		pri = getParentLevel(lo)
 	}
 

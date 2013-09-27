@@ -4,6 +4,11 @@ import (
 	"testing"
 )
 
+func init() {
+	SetLevel("logger.Test", Debug)
+	ErrorM("Test", "Test")
+}
+
 func Test_GetLevel(t *testing.T) {
 	n := Logger("logger.Test.GetLevel")
 

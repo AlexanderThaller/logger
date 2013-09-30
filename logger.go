@@ -33,8 +33,7 @@ type logger struct {
 	Logger
 	Priority
 	Format
-	TimeFormat     string
-	FormatTemplate *template.Template
+	TimeFormat string
 }
 
 // Priorities define how important a log message is. Loggers will output
@@ -74,9 +73,6 @@ func init() {
 		Format:     format,
 		TimeFormat: timeformat,
 	}
-	t := template.New("FormatTemplate")
-	t, _ = t.Parse(string(format))
-	l.FormatTemplate = t
 
 	loggers[defroot] = l
 
@@ -180,10 +176,6 @@ func getParentLogger(lo Logger) (log logger) {
 	log = getLogger(l)
 	log.Logger = lo
 
-	t := template.New("FormatTemplate")
-	t, _ = t.Parse(string(format))
-	log.FormatTemplate = t
-
 	return
 }
 
@@ -195,15 +187,8 @@ func getParentLogger(lo Logger) (log logger) {
 // The default Format is:
 // "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
 func SetFormat(lo Logger, fo Format) (err error) {
-	t := template.New("FormatTemplate")
-	t, err = t.Parse(string(fo))
-	if err != nil {
-		return
-	}
-
 	l := getLogger(lo)
 	l.Format = fo
-	l.FormatTemplate = t
 	loggers[lo] = l
 
 	return
@@ -234,10 +219,18 @@ func printMessage(lo logger, pr Priority, wr io.Writer, me ...interface{}) {
 	m.Priority = priorities[pr]
 	m.Message = fmt.Sprint(me...)
 
-	e := lo.FormatTemplate.Execute(wr, m)
-	if e != nil {
-		fmt.Println(e)
-	}
+	s := formatMessage(m, lo.Format)
+
+	fmt.Fprint(wr, s)
+}
+
+func formatMessage(me *message, fo Format) (so string) {
+	so = strings.Replace(string(fo), "{{.Time}}", me.Time, -1)
+	so = strings.Replace(so, "{{.Logger}}", string(me.Logger), -1)
+	so = strings.Replace(so, "{{.Priority}}", me.Priority, -1)
+	so = strings.Replace(so, "{{.Message}}", me.Message, -1)
+
+	return
 }
 
 // Log a message at Debug priority.

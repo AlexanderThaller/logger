@@ -95,6 +95,8 @@ func Test_printMessage(t *testing.T) {
 	m := [][]string{
 		{"", "Test - Debug - "},
 		{"Test", "Test - Debug - Test"},
+		{"Test.Test", "Test - Debug - Test.Test"},
+		{"Test.Test.Test", "Test - Debug - Test.Test.Test"},
 	}
 
 	SetFormat("Test", "{{.Logger}} - {{.Priority}} - {{.Message}}")
@@ -194,27 +196,26 @@ func Benchmark_getParentChildChildChildChildChild(b *testing.B) {
 }
 
 func Benchmark_printMessage(b *testing.B) {
-		var a bytes.Buffer
-	  l := getLogger("Bench_printMessage")
+	var a bytes.Buffer
+	l := getLogger("Bench_printMessage")
 
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-      printMessage(l, Debug, &a, "Message")
-    }
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		printMessage(l, Debug, &a, "Message")
+	}
 }
 
-func Benchmark_printMessageExecute(b *testing.B) {
-  var a bytes.Buffer
-  l := getLogger("Bench_printMessageExecute")
+func Benchmark_formatMessage(b *testing.B) {
+	l := getLogger("Bench_formatMessage")
 
 	m := new(message)
-  m.Time = "Mo 30 Sep 2013 20:29:19 CEST"
+	m.Time = "Mo 30 Sep 2013 20:29:19 CEST"
 	m.Logger = l.Logger
 	m.Priority = "Debug"
 	m.Message = "Test"
 
-  b.ResetTimer()
-  for i := 0; i < b.N; i++ {
-    l.FormatTemplate.Execute(&a, m)
-  }
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		formatMessage(m, l.Format)
+	}
 }

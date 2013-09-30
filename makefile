@@ -8,3 +8,4 @@ bench:
 	go test -test.bench Log
 	go test -test.bench get
 	go test -test.bench print
+	go test -test.bench format

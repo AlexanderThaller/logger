@@ -5,6 +5,7 @@ package logger
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"text/template"
@@ -32,7 +33,8 @@ type logger struct {
 	Logger
 	Priority
 	Format
-	TimeFormat string
+	TimeFormat     string
+	FormatTemplate *template.Template
 }
 
 // Priorities define how important a log message is. Loggers will output
@@ -72,6 +74,9 @@ func init() {
 		Format:     format,
 		TimeFormat: timeformat,
 	}
+	t := template.New("FormatTemplate")
+	t, _ = t.Parse(string(format))
+	l.FormatTemplate = t
 
 	loggers[defroot] = l
 
@@ -159,6 +164,29 @@ func getParent(lo Logger) (log Logger) {
 	return
 }
 
+func getLogger(lo Logger) (log logger) {
+	l, e := loggers[lo]
+	if e {
+		log = l
+	} else {
+		log = getParentLogger(lo)
+	}
+
+	return
+}
+
+func getParentLogger(lo Logger) (log logger) {
+	l := getParent(lo)
+	log = getLogger(l)
+	log.Logger = lo
+
+	t := template.New("FormatTemplate")
+	t, _ = t.Parse(string(format))
+	log.FormatTemplate = t
+
+	return
+}
+
 // Set output format. Avaivable fields are:
 // Time: The time when the message is printed.
 // Logger: The name of the logger.
@@ -166,14 +194,17 @@ func getParent(lo Logger) (log Logger) {
 // Message: The output message.
 // The default Format is:
 // "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
-func SetFormat(fo Format) (err error) {
+func SetFormat(lo Logger, fo Format) (err error) {
 	t := template.New("FormatTemplate")
-	t, err = t.Parse(string(format))
+	t, err = t.Parse(string(fo))
 	if err != nil {
 		return
 	}
 
-	formattemplate = *t
+	l := getLogger(lo)
+	l.Format = fo
+	l.FormatTemplate = t
+	loggers[lo] = l
 
 	return
 }
@@ -187,19 +218,26 @@ func SetTimeFormat(fo string) (err error) {
 
 // Log a message using the given logger at a given priority.
 func LogM(lo Logger, pr Priority, me ...interface{}) {
-	p := GetLevel(lo)
+	l := getLogger(lo)
 
-	if p > pr {
+	if l.Priority > pr {
 		return
 	}
 
+	printMessage(l, pr, os.Stderr, me...)
+}
+
+func printMessage(lo logger, pr Priority, wr io.Writer, me ...interface{}) {
 	m := new(message)
-	m.Time = time.Now().Format(timeformat)
-	m.Logger = lo
+	m.Time = time.Now().Format(string(lo.TimeFormat))
+	m.Logger = lo.Logger
 	m.Priority = priorities[pr]
 	m.Message = fmt.Sprint(me...)
 
-	formattemplate.Execute(os.Stderr, m)
+	e := lo.FormatTemplate.Execute(wr, m)
+	if e != nil {
+		fmt.Println(e)
+	}
 }
 
 // Log a message at Debug priority.

@@ -1,0 +1,23 @@
+go test -test.bench Log
+PASS
+Benchmark_LogMRoot	10000000	       139 ns/op
+Benchmark_LogMRootEmergency	  100000	     13696 ns/op
+Benchmark_LogMChild	  100000	     20879 ns/op
+Benchmark_LogMChildChild	   50000	     42932 ns/op
+Benchmark_LogMChildAllocated	10000000	       146 ns/op
+Benchmark_LogMChildChildAllocated	10000000	       162 ns/op
+ok  	logger	11.348s
+go test -test.bench get
+PASS
+Benchmark_getParentRoot	100000000	        10.7 ns/op
+Benchmark_getParentChild	10000000	       227 ns/op
+Benchmark_getParentChildChild	 5000000	       339 ns/op
+Benchmark_getParentChildChildChild	 5000000	       700 ns/op
+Benchmark_getParentChildChildChildChild	 2000000	       758 ns/op
+Benchmark_getParentChildChildChildChildChild	 2000000	       847 ns/op
+ok  	logger	14.693s
+go test -test.bench print
+PASS
+Benchmark_printMessage	  200000	     10608 ns/op
+Benchmark_printMessageExecute	  200000	      7638 ns/op
+ok  	logger	3.872s

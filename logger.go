@@ -194,10 +194,14 @@ func SetFormat(lo Logger, fo Format) (err error) {
 	return
 }
 
-// Set the timeformat that will be used to format the time in the format.
+// Set the TimeFormat which will be used in the message format for the
+// specified logger
 // The default format is: RFC3339
-func SetTimeFormat(fo string) (err error) {
-	timeformat = fo
+func SetTimeFormat(lo Logger, fo string) (err error) {
+	l := getLogger(lo)
+	l.TimeFormat = fo
+	loggers[lo] = l
+
 	return
 }
 

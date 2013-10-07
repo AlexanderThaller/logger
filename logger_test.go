@@ -10,10 +10,10 @@ func Test_GetLevel(t *testing.T) {
 
 	InfoM(n, "Starting")
 	m := make(map[Logger]Priority)
-	m[""] = defpriority
-	m["."] = defpriority
-	m["Test"] = defpriority
-	m[".Test"] = defpriority
+	m[""] = DefaultPriority
+	m["."] = DefaultPriority
+	m["Test"] = DefaultPriority
+	m[".Test"] = DefaultPriority
 
 	SetLevel("Test2", Emergency)
 	m["Test2"] = Emergency
@@ -39,12 +39,12 @@ func Test_getParentLevel(t *testing.T) {
 
 	InfoM(n, "Starting")
 	m := make(map[Logger]Priority)
-	m["."] = defpriority
-	m["Test"] = defpriority
-	m["Test.Test"] = defpriority
+	m["."] = DefaultPriority
+	m["Test"] = DefaultPriority
+	m["Test.Test"] = DefaultPriority
 
 	SetLevel("Test2", Emergency)
-	m["Test2"] = defpriority
+	m["Test2"] = DefaultPriority
 	m["Test2.Test"] = Emergency
 
 	for k, v := range m {

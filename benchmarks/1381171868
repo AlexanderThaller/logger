@@ -1,0 +1,17 @@
+go test -test.bench .
+PASS
+Benchmark_LogMRoot	10000000	       140 ns/op
+Benchmark_LogMRootEmergency	  100000	     13614 ns/op
+Benchmark_LogMChild	 5000000	       430 ns/op
+Benchmark_LogMChildChild	 2000000	       833 ns/op
+Benchmark_LogMChildAllocated	10000000	       146 ns/op
+Benchmark_LogMChildChildAllocated	10000000	       161 ns/op
+Benchmark_getParentRoot	100000000	        10.7 ns/op
+Benchmark_getParentChild	10000000	       228 ns/op
+Benchmark_getParentChildChild	 5000000	       338 ns/op
+Benchmark_getParentChildChildChild	 5000000	       698 ns/op
+Benchmark_getParentChildChildChildChild	 2000000	       759 ns/op
+Benchmark_getParentChildChildChildChildChild	 2000000	       855 ns/op
+Benchmark_printMessage	  500000	      6801 ns/op
+Benchmark_formatMessage	  500000	      4026 ns/op
+ok  	logger	33.022s

@@ -52,9 +52,9 @@ const (
 )
 
 const (
-	defroot      = Logger(".")
-	defseperator = "."
-	defpriority  = Notice
+	defroot         = Logger(".")
+	defseperator    = "."
+	DefaultPriority = Notice
 )
 
 var (
@@ -69,7 +69,7 @@ var (
 func init() {
 	loggers = make(map[Logger]logger)
 	l := logger{Logger: defroot,
-		Priority:   defpriority,
+		Priority:   DefaultPriority,
 		Format:     format,
 		TimeFormat: timeformat,
 	}
@@ -177,6 +177,24 @@ func getParentLogger(lo Logger) (log logger) {
 	log.Logger = lo
 
 	return
+}
+
+// Parses and returns the given priority.
+func ParsePriority(pr string) Priority {
+	for k, v := range priorities {
+		if v == pr {
+			return k
+		}
+	}
+
+	e := errors.New("Can not parse " + pr + ". Using DefaultPriority")
+	ErrorM("logger.ParsePriority", e)
+	return DefaultPriority
+}
+
+// Returns the name of an priority.
+func NamePriority(pr Priority) string {
+	return priorities[pr]
 }
 
 // Set output format. Avaivable fields are:

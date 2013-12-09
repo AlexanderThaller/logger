@@ -47,3 +47,6 @@ func main() {
   logger.DebugM(l, "More debug values")
 }
 ```
+
+## Documentation
+The documentation can be found here: <http://godoc.org/github.com/AlexanderThaller/logger>

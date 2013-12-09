@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test_GetLevel(t *testing.T) {
+func TestGetLevel(t *testing.T) {
 	n := Logger("logger.Test.GetLevel")
 
 	InfoM(n, "Starting")
@@ -34,7 +34,7 @@ func Test_GetLevel(t *testing.T) {
 	InfoM(n, "Finished")
 }
 
-func Test_getParentLevel(t *testing.T) {
+func TestgetParentLevel(t *testing.T) {
 	n := Logger("logger.Test.getParentLevel")
 
 	InfoM(n, "Starting")
@@ -58,7 +58,7 @@ func Test_getParentLevel(t *testing.T) {
 	InfoM(n, "Finished")
 }
 
-func Test_getParent(t *testing.T) {
+func TestgetParent(t *testing.T) {
 	n := Logger("logger.Test.getParent")
 
 	InfoM(n, "Starting")
@@ -88,7 +88,7 @@ func Test_getParent(t *testing.T) {
 	InfoM(n, "Finished")
 }
 
-func Test_printMessage(t *testing.T) {
+func TestprintMessage(t *testing.T) {
 	n := Logger("logger.Test.printMessage")
 
 	InfoM(n, "Starting")
@@ -121,83 +121,83 @@ func Test_printMessage(t *testing.T) {
 	InfoM(n, "Finished")
 }
 
-func Benchmark_LogMRoot(b *testing.B) {
+func BenchmarkLogMRoot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		LogM(".", Debug, "Test")
 	}
 }
 
-func Benchmark_LogMRootEmergency(b *testing.B) {
+func BenchmarkLogMRootEmergency(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		LogM(".", Emergency, "Test")
 	}
 }
 
-func Benchmark_LogMChild(b *testing.B) {
+func BenchmarkLogMChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		LogM("Bench_LogMChild", Debug, "Test")
+		LogM("BenchLogMChild", Debug, "Test")
 	}
 }
 
-func Benchmark_LogMChildChild(b *testing.B) {
+func BenchmarkLogMChildChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		LogM("Bench_LogMChildChild.Test", Debug, "Test")
+		LogM("BenchLogMChildChild.Test", Debug, "Test")
 	}
 }
 
-func Benchmark_LogMChildAllocated(b *testing.B) {
-	SetLevel("Bench_LogMChildAllocated", Emergency)
+func BenchmarkLogMChildAllocated(b *testing.B) {
+	SetLevel("BenchLogMChildAllocated", Emergency)
 	for i := 0; i < b.N; i++ {
-		LogM("Bench_LogMChildAllocated", Debug, "Test")
+		LogM("BenchLogMChildAllocated", Debug, "Test")
 	}
 }
 
-func Benchmark_LogMChildChildAllocated(b *testing.B) {
-	SetLevel("Bench_LogMChildChildAllocated.Test", Emergency)
+func BenchmarkLogMChildChildAllocated(b *testing.B) {
+	SetLevel("BenchLogMChildChildAllocated.Test", Emergency)
 	for i := 0; i < b.N; i++ {
-		LogM("Bench_LogMChildChildAllocated.Test", Debug, "Test")
+		LogM("BenchLogMChildChildAllocated.Test", Debug, "Test")
 	}
 }
 
-func Benchmark_getParentRoot(b *testing.B) {
+func BenchmarkGetParentRoot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		getParent(".")
 	}
 }
 
-func Benchmark_getParentChild(b *testing.B) {
+func BenchmarkGetParentChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		getParent("Bench_getParentChild")
+		getParent("BenchgetParentChild")
 	}
 }
 
-func Benchmark_getParentChildChild(b *testing.B) {
+func BenchmarkGetParentChildChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		getParent("Bench_getParentChildChild.Test")
+		getParent("BenchgetParentChildChild.Test")
 	}
 }
 
-func Benchmark_getParentChildChildChild(b *testing.B) {
+func BenchmarkGetParentChildChildChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		getParent("Bench_getParentChildChild.Test.Test")
+		getParent("BenchgetParentChildChild.Test.Test")
 	}
 }
 
-func Benchmark_getParentChildChildChildChild(b *testing.B) {
+func BenchmarkGetParentChildChildChildChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		getParent("Bench_getParentChildChildChild.Test.Test")
+		getParent("BenchgetParentChildChildChild.Test.Test")
 	}
 }
 
-func Benchmark_getParentChildChildChildChildChild(b *testing.B) {
+func BenchmarkGetParentChildChildChildChildChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		getParent("Bench_getParentChildChildChildChild.Test.Test.Test")
+		getParent("BenchgetParentChildChildChildChild.Test.Test.Test")
 	}
 }
 
-func Benchmark_printMessage(b *testing.B) {
+func BenchmarkPrintMessage(b *testing.B) {
 	var a bytes.Buffer
-	l := getLogger("Bench_printMessage")
+	l := getLogger("BenchprintMessage")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -205,8 +205,8 @@ func Benchmark_printMessage(b *testing.B) {
 	}
 }
 
-func Benchmark_formatMessage(b *testing.B) {
-	l := getLogger("Bench_formatMessage")
+func BenchmarkFormatMessage(b *testing.B) {
+	l := getLogger("BenchformatMessage")
 
 	m := new(message)
 	m.Time = "Mo 30 Sep 2013 20:29:19 CEST"

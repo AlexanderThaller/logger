@@ -16,7 +16,7 @@ import (
 // for an logger.
 type Format string
 
-// Loggers represent different lognames and priorities. They can have
+// Logger represent different lognames and priorities. They can have
 // parents and child loggers which will inherit the priority of the
 // parent if it has none. The hirachy of loggers is represented through
 // sepperation with dots ('.'). The root logger has the name '.'.
@@ -36,30 +36,35 @@ type logger struct {
 	TimeFormat string
 }
 
-// Priorities define how important a log message is. Loggers will output
+// Priority defines how important a log message is. Loggers will output
 // messages which are above their priority level.
 type Priority int
 
+// Different priority levels ordered by their severity.
 const (
-	Debug     Priority = iota // Debugging messages
-	Info                      // Information
-	Notice                    // Normal messages
-	Warning                   // General Warning
-	Error                     // General Errors
-	Critical                  // Severe situations
-	Alert                     // Take immediate action
-	Emergency                 // System is unusable
+	Debug Priority = iota
+	Info
+	Notice
+	Warning
+	Error
+	Critical
+	Alert
+	Emergency
+)
+
+// DefaultPriority of the root logger.
+const (
+	DefaultPriority Priority = Notice
 )
 
 const (
-	defroot         = Logger(".")
-	defseperator    = "."
-	DefaultPriority = Notice
+	defroot      = Logger(".")
+	defseperator = "."
 )
 
 var (
-	format     Format = "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
-	timeformat        = time.RFC3339
+	format     = "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
+	timeformat = time.RFC3339
 
 	priorities     map[Priority]string
 	loggers        map[Logger]logger
@@ -70,7 +75,7 @@ func init() {
 	loggers = make(map[Logger]logger)
 	l := logger{Logger: defroot,
 		Priority:   DefaultPriority,
-		Format:     format,
+		Format:     Format(format),
 		TimeFormat: timeformat,
 	}
 
@@ -87,9 +92,10 @@ func init() {
 	priorities[Emergency] = "Emergency"
 }
 
-// Set the priority level of the logger.
+// SetLevel sets the priority level for the logger which should be
+// logged.
 func SetLevel(lo Logger, pr Priority) (err error) {
-	err = errors.New("This priority does not exist")
+	err = errors.New("this priority does not exist")
 
 	for k := range priorities {
 		if k == pr {
@@ -104,7 +110,7 @@ func SetLevel(lo Logger, pr Priority) (err error) {
 
 	l := logger{Logger: lo,
 		Priority:   pr,
-		Format:     format,
+		Format:     Format(format),
 		TimeFormat: timeformat,
 	}
 
@@ -112,7 +118,7 @@ func SetLevel(lo Logger, pr Priority) (err error) {
 	return
 }
 
-// Get the priority level of the logger.
+// GetLevel returns the priority level of the given logger.
 func GetLevel(lo Logger) (pri Priority) {
 	l, e := loggers[lo]
 	if e {
@@ -179,7 +185,7 @@ func getParentLogger(lo Logger) (log logger) {
 	return
 }
 
-// Parses and returns the given priority.
+// ParsePriority tries to parse the priority by the given string.
 func ParsePriority(pr string) Priority {
 	for k, v := range priorities {
 		if v == pr {
@@ -192,17 +198,24 @@ func ParsePriority(pr string) Priority {
 	return DefaultPriority
 }
 
-// Returns the name of an priority.
+// NamePriority returns the string value of the given priority.
 func NamePriority(pr Priority) string {
 	return priorities[pr]
 }
 
-// Set output format. Avaivable fields are:
+// SetFormat changes the message format for the given logger. Avaivable
+// fields are:
+//
 // Time: The time when the message is printed.
+//
 // Logger: The name of the logger.
+//
 // Priority: The priority of the logger.
+//
 // Message: The output message.
+//
 // The default Format is:
+//
 // "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
 func SetFormat(lo Logger, fo Format) (err error) {
 	l := getLogger(lo)
@@ -212,8 +225,9 @@ func SetFormat(lo Logger, fo Format) (err error) {
 	return
 }
 
-// Set the TimeFormat which will be used in the message format for the
-// specified logger
+// SetTimeFormat sets the TimeFormat which will be used in the message
+// format for the specified logger
+//
 // The default format is: RFC3339
 func SetTimeFormat(lo Logger, fo string) (err error) {
 	l := getLogger(lo)
@@ -223,7 +237,7 @@ func SetTimeFormat(lo Logger, fo string) (err error) {
 	return
 }
 
-// Log a message using the given logger at a given priority.
+// LogM logs a message using the given logger at a given priority.
 func LogM(lo Logger, pr Priority, me ...interface{}) {
 	l := getLogger(lo)
 
@@ -255,42 +269,42 @@ func formatMessage(me *message, fo Format) (so string) {
 	return
 }
 
-// Log a message at Debug priority.
+// DebugM logs a message with the Debug priority.
 func DebugM(lo Logger, me ...interface{}) {
 	LogM(lo, Debug, me...)
 }
 
-// Log a message at Info priority.
+// InfoM logs a message with the Debug priority.
 func InfoM(lo Logger, me ...interface{}) {
 	LogM(lo, Info, me...)
 }
 
-// Log a message at Notice priority.
+// NoticeM logs a message with the Debug priority.
 func NoticeM(lo Logger, me ...interface{}) {
 	LogM(lo, Notice, me...)
 }
 
-// Log a message at Warning priority.
+// WarningM logs a message with the Debug priority.
 func WarningM(lo Logger, me ...interface{}) {
 	LogM(lo, Warning, me...)
 }
 
-// Log a message at Error priority.
+// ErrorM logs a message with the Debug priority.
 func ErrorM(lo Logger, me ...interface{}) {
 	LogM(lo, Error, me...)
 }
 
-// Log a message at Critical priority.
+// CriticalM logs a message with the Debug priority.
 func CriticalM(lo Logger, me ...interface{}) {
 	LogM(lo, Critical, me...)
 }
 
-// Log a message at Alert priority.
+// AlertM logs a message with the Debug priority.
 func AlertM(lo Logger, me ...interface{}) {
 	LogM(lo, Alert, me...)
 }
 
-// Log a message at Emergency priority.
+// EmergencyM logs a message with the Debug priority.
 func EmergencyM(lo Logger, me ...interface{}) {
 	LogM(lo, Emergency, me...)
 }

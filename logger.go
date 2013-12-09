@@ -92,6 +92,11 @@ func init() {
 	priorities[Emergency] = "Emergency"
 }
 
+// NewLogger will return a logger with the given name.
+func NewLogger(na string) (log Logger) {
+	return Logger(na)
+}
+
 // SetLevel sets the priority level for the logger which should be
 // logged.
 func SetLevel(lo Logger, pr Priority) (err error) {

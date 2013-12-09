@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetLevel(t *testing.T) {
-	n := Logger("logger.Test.GetLevel")
+	n := NewLogger("logger.Test.GetLevel")
 
 	InfoM(n, "Starting")
 	m := make(map[Logger]Priority)
@@ -35,7 +35,7 @@ func TestGetLevel(t *testing.T) {
 }
 
 func TestgetParentLevel(t *testing.T) {
-	n := Logger("logger.Test.getParentLevel")
+	n := NewLogger("logger.Test.getParentLevel")
 
 	InfoM(n, "Starting")
 	m := make(map[Logger]Priority)
@@ -59,7 +59,7 @@ func TestgetParentLevel(t *testing.T) {
 }
 
 func TestgetParent(t *testing.T) {
-	n := Logger("logger.Test.getParent")
+	n := NewLogger("logger.Test.getParent")
 
 	InfoM(n, "Starting")
 	m := [][]Logger{
@@ -89,7 +89,7 @@ func TestgetParent(t *testing.T) {
 }
 
 func TestprintMessage(t *testing.T) {
-	n := Logger("logger.Test.printMessage")
+	n := NewLogger("logger.Test.printMessage")
 
 	InfoM(n, "Starting")
 	m := [][]string{

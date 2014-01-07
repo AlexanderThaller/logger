@@ -275,41 +275,41 @@ func formatMessage(me *message, fo Format) (so string) {
 }
 
 // DebugM logs a message with the Debug priority.
-func DebugM(lo Logger, me ...interface{}) {
+func (lo Logger) Debug(me ...interface{}) {
 	LogM(lo, Debug, me...)
 }
 
 // InfoM logs a message with the Debug priority.
-func InfoM(lo Logger, me ...interface{}) {
+func (lo Logger) Info(me ...interface{}) {
 	LogM(lo, Info, me...)
 }
 
 // NoticeM logs a message with the Debug priority.
-func NoticeM(lo Logger, me ...interface{}) {
+func (lo Logger) Notice(me ...interface{}) {
 	LogM(lo, Notice, me...)
 }
 
 // WarningM logs a message with the Debug priority.
-func WarningM(lo Logger, me ...interface{}) {
+func (lo Logger) Warning(me ...interface{}) {
 	LogM(lo, Warning, me...)
 }
 
 // ErrorM logs a message with the Debug priority.
-func ErrorM(lo Logger, me ...interface{}) {
+func (lo Logger) Error(me ...interface{}) {
 	LogM(lo, Error, me...)
 }
 
 // CriticalM logs a message with the Debug priority.
-func CriticalM(lo Logger, me ...interface{}) {
+func (lo Logger) Critical(me ...interface{}) {
 	LogM(lo, Critical, me...)
 }
 
 // AlertM logs a message with the Debug priority.
-func AlertM(lo Logger, me ...interface{}) {
+func (lo Logger) Alert(me ...interface{}) {
 	LogM(lo, Alert, me...)
 }
 
 // EmergencyM logs a message with the Debug priority.
-func EmergencyM(lo Logger, me ...interface{}) {
+func (lo Logger) Emergency(me ...interface{}) {
 	LogM(lo, Emergency, me...)
 }

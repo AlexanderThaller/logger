@@ -92,8 +92,8 @@ func init() {
 	priorities[Emergency] = "Emergency"
 }
 
-// NewLogger will return a logger with the given name.
-func NewLogger(na string) (log Logger) {
+// New will return a logger with the given name.
+func New(na string) (log Logger) {
 	return Logger(na)
 }
 

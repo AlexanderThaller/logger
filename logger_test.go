@@ -6,9 +6,9 @@ import (
 )
 
 func TestGetLevel(t *testing.T) {
-	n := NewLogger("logger.Test.GetLevel")
+	n := New("logger.Test.GetLevel")
 
-	InfoM(n, "Starting")
+	n.Info(n, "Starting")
 	m := make(map[Logger]Priority)
 	m[""] = DefaultPriority
 	m["."] = DefaultPriority
@@ -26,18 +26,18 @@ func TestGetLevel(t *testing.T) {
 	for k, v := range m {
 		o := GetLevel(k)
 		if o != v {
-			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+			n.Error(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
-		DebugM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+		n.Debug(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 	}
-	InfoM(n, "Finished")
+	n.Info(n, "Finished")
 }
 
 func TestgetParentLevel(t *testing.T) {
-	n := NewLogger("logger.Test.getParentLevel")
+	n := New("logger.Test.getParentLevel")
 
-	InfoM(n, "Starting")
+	n.Info(n, "Starting")
 	m := make(map[Logger]Priority)
 	m["."] = DefaultPriority
 	m["Test"] = DefaultPriority
@@ -50,18 +50,18 @@ func TestgetParentLevel(t *testing.T) {
 	for k, v := range m {
 		o := getParentLevel(k)
 		if o != v {
-			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+			n.Error(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
-		DebugM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+		n.Debug(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 	}
-	InfoM(n, "Finished")
+	n.Info(n, "Finished")
 }
 
 func TestgetParent(t *testing.T) {
-	n := NewLogger("logger.Test.getParent")
+	n := New("logger.Test.getParent")
 
-	InfoM(n, "Starting")
+	n.Info(n, "Starting")
 	m := [][]Logger{
 		{"", "."},
 		{".Test", "."},
@@ -80,18 +80,18 @@ func TestgetParent(t *testing.T) {
 
 		o := getParent(k)
 		if o != v {
-			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+			n.Error(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
-		DebugM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+		n.Debug(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 	}
-	InfoM(n, "Finished")
+	n.Info(n, "Finished")
 }
 
 func TestprintMessage(t *testing.T) {
-	n := NewLogger("logger.Test.printMessage")
+	n := New("logger.Test.printMessage")
 
-	InfoM(n, "Starting")
+	n.Info(n, "Starting")
 	m := [][]string{
 		{"", "Test - Debug - "},
 		{"Test", "Test - Debug - Test"},
@@ -112,50 +112,50 @@ func TestprintMessage(t *testing.T) {
 		printMessage(l, Debug, &b, k)
 		o := b.String()
 		if o != v {
-			ErrorM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+			n.Error(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
-		DebugM(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+		n.Debug(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 	}
 
-	InfoM(n, "Finished")
+	n.Info(n, "Finished")
 }
 
 func BenchmarkLogMRoot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		LogM(".", Debug, "Test")
+		Log(".", Debug, "Test")
 	}
 }
 
 func BenchmarkLogMRootEmergency(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		LogM(".", Emergency, "Test")
+		Log(".", Emergency, "Test")
 	}
 }
 
 func BenchmarkLogMChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		LogM("BenchLogMChild", Debug, "Test")
+		Log("BenchLogMChild", Debug, "Test")
 	}
 }
 
 func BenchmarkLogMChildChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		LogM("BenchLogMChildChild.Test", Debug, "Test")
+		Log("BenchLogMChildChild.Test", Debug, "Test")
 	}
 }
 
 func BenchmarkLogMChildAllocated(b *testing.B) {
 	SetLevel("BenchLogMChildAllocated", Emergency)
 	for i := 0; i < b.N; i++ {
-		LogM("BenchLogMChildAllocated", Debug, "Test")
+		Log("BenchLogMChildAllocated", Debug, "Test")
 	}
 }
 
 func BenchmarkLogMChildChildAllocated(b *testing.B) {
 	SetLevel("BenchLogMChildChildAllocated.Test", Emergency)
 	for i := 0; i < b.N; i++ {
-		LogM("BenchLogMChildChildAllocated.Test", Debug, "Test")
+		Log("BenchLogMChildChildAllocated.Test", Debug, "Test")
 	}
 }
 

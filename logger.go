@@ -191,16 +191,15 @@ func getParentLogger(lo Logger) (log logger) {
 }
 
 // ParsePriority tries to parse the priority by the given string.
-func ParsePriority(pr string) Priority {
+func ParsePriority(pr string) (Priority, error) {
 	for k, v := range priorities {
 		if v == pr {
-			return k
+			return k, nil
 		}
 	}
 
 	e := errors.New("Can not parse " + pr + ". Using DefaultPriority")
-	ErrorM("logger.ParsePriority", e)
-	return DefaultPriority
+	return DefaultPriority, e
 }
 
 // NamePriority returns the string value of the given priority.
@@ -242,8 +241,8 @@ func SetTimeFormat(lo Logger, fo string) (err error) {
 	return
 }
 
-// LogM logs a message using the given logger at a given priority.
-func LogM(lo Logger, pr Priority, me ...interface{}) {
+// Log logs a message using the given logger at a given priority.
+func Log(lo Logger, pr Priority, me ...interface{}) {
 	l := getLogger(lo)
 
 	if l.Priority > pr {
@@ -276,40 +275,40 @@ func formatMessage(me *message, fo Format) (so string) {
 
 // DebugM logs a message with the Debug priority.
 func (lo Logger) Debug(me ...interface{}) {
-	LogM(lo, Debug, me...)
+	Log(lo, Debug, me...)
 }
 
 // InfoM logs a message with the Debug priority.
 func (lo Logger) Info(me ...interface{}) {
-	LogM(lo, Info, me...)
+	Log(lo, Info, me...)
 }
 
 // NoticeM logs a message with the Debug priority.
 func (lo Logger) Notice(me ...interface{}) {
-	LogM(lo, Notice, me...)
+	Log(lo, Notice, me...)
 }
 
 // WarningM logs a message with the Debug priority.
 func (lo Logger) Warning(me ...interface{}) {
-	LogM(lo, Warning, me...)
+	Log(lo, Warning, me...)
 }
 
 // ErrorM logs a message with the Debug priority.
 func (lo Logger) Error(me ...interface{}) {
-	LogM(lo, Error, me...)
+	Log(lo, Error, me...)
 }
 
 // CriticalM logs a message with the Debug priority.
 func (lo Logger) Critical(me ...interface{}) {
-	LogM(lo, Critical, me...)
+	Log(lo, Critical, me...)
 }
 
 // AlertM logs a message with the Debug priority.
 func (lo Logger) Alert(me ...interface{}) {
-	LogM(lo, Alert, me...)
+	Log(lo, Alert, me...)
 }
 
 // EmergencyM logs a message with the Debug priority.
 func (lo Logger) Emergency(me ...interface{}) {
-	LogM(lo, Emergency, me...)
+	Log(lo, Emergency, me...)
 }

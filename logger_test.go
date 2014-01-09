@@ -121,41 +121,41 @@ func TestprintMessage(t *testing.T) {
 	n.Info(n, "Finished")
 }
 
-func BenchmarkLogMRoot(b *testing.B) {
+func BenchmarkLogRoot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Log(".", Debug, "Test")
 	}
 }
 
-func BenchmarkLogMRootEmergency(b *testing.B) {
+func BenchmarkLogRootEmergency(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Log(".", Emergency, "Test")
 	}
 }
 
-func BenchmarkLogMChild(b *testing.B) {
+func BenchmarkLogChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Log("BenchLogMChild", Debug, "Test")
+		Log("BenchLogChild", Debug, "Test")
 	}
 }
 
-func BenchmarkLogMChildChild(b *testing.B) {
+func BenchmarkLogChildChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Log("BenchLogMChildChild.Test", Debug, "Test")
+		Log("BenchLogChildChild.Test", Debug, "Test")
 	}
 }
 
-func BenchmarkLogMChildAllocated(b *testing.B) {
-	SetLevel("BenchLogMChildAllocated", Emergency)
+func BenchmarkLogChildAllocated(b *testing.B) {
+	SetLevel("BenchLogChildAllocated", Emergency)
 	for i := 0; i < b.N; i++ {
-		Log("BenchLogMChildAllocated", Debug, "Test")
+		Log("BenchLogChildAllocated", Debug, "Test")
 	}
 }
 
-func BenchmarkLogMChildChildAllocated(b *testing.B) {
-	SetLevel("BenchLogMChildChildAllocated.Test", Emergency)
+func BenchmarkLogChildChildAllocated(b *testing.B) {
+	SetLevel("BenchLogChildChildAllocated.Test", Emergency)
 	for i := 0; i < b.N; i++ {
-		Log("BenchLogMChildChildAllocated.Test", Debug, "Test")
+		Log("BenchLogChildChildAllocated.Test", Debug, "Test")
 	}
 }
 

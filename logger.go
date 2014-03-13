@@ -84,6 +84,7 @@ var (
 	formattemplate template.Template
 
 	NoColor bool
+	Output  io.Writer
 )
 
 func init() {
@@ -93,6 +94,7 @@ func init() {
 		Format:     Format(format),
 		TimeFormat: timeformat,
 	}
+	Output = os.Stderr
 
 	loggers[defroot] = l
 
@@ -265,7 +267,7 @@ func Log(lo Logger, pr Priority, me ...interface{}) {
 		return
 	}
 
-	printMessage(l, pr, os.Stderr, me...)
+	printMessage(l, pr, Output, me...)
 }
 
 func printMessage(lo logger, pr Priority, wr io.Writer, me ...interface{}) {

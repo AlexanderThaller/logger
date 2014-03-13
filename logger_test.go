@@ -145,7 +145,7 @@ func TestPrintColors(t *testing.T) {
 	l.Critical("NoColorCritical")
 	l.Alert("NoColorAlert")
 	l.Emergency("NoColorEmergency")
-  NoColor = false
+	NoColor = false
 }
 
 func BenchmarkLogRoot(b *testing.B) {

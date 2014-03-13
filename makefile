@@ -4,6 +4,7 @@ default:
 
 format:
 	gofmt -s=true -w=true *.go
+	goimports -w=true *.go
 
 test:
 	go test

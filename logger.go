@@ -64,7 +64,7 @@ const (
 )
 
 var (
-	format     = "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
+	format     = "[{{.Time}} {{.Priority}} {{.Logger}}] - {{.Message}}.\n"
 	timeformat = time.RFC3339
 
 	priorities     map[Priority]string

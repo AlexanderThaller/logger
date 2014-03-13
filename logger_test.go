@@ -121,6 +121,20 @@ func TestprintMessage(t *testing.T) {
 	n.Info(n, "Finished")
 }
 
+func TestPrintColors(t *testing.T) {
+	l := New("logger.Test.PrintColors")
+	SetLevel("logger.Test.PrintColors", Disable)
+
+	l.Debug("Debug")
+	l.Info("Info")
+	l.Notice("Notice")
+	l.Warning("Warning")
+	l.Error("Error")
+	l.Critical("Critical")
+	l.Alert("Alert")
+	l.Emergency("Emergency")
+}
+
 func BenchmarkLogRoot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Log(".", Debug, "Test")

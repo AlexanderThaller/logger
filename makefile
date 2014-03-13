@@ -5,6 +5,7 @@ default:
 format:
 	gofmt -s=true -w=true *.go
 	goimports -w=true *.go
+# golint *.go */*/*.go
 
 test:
 	go test

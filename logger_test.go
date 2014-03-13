@@ -125,6 +125,8 @@ func TestPrintColors(t *testing.T) {
 	l := New("logger.Test.PrintColors")
 	SetLevel("logger.Test.PrintColors", Disable)
 
+	//TODO: Compare strings instead of printing.
+
 	l.Debug("Debug")
 	l.Info("Info")
 	l.Notice("Notice")
@@ -133,6 +135,16 @@ func TestPrintColors(t *testing.T) {
 	l.Critical("Critical")
 	l.Alert("Alert")
 	l.Emergency("Emergency")
+
+	NoColor = true
+	l.Debug("NoColorDebug")
+	l.Info("NoColorInfo")
+	l.Notice("NoColorNotice")
+	l.Warning("NoColorWarning")
+	l.Error("NoColorError")
+	l.Critical("NoColorCritical")
+	l.Alert("NoColorAlert")
+	l.Emergency("NoColorEmergency")
 }
 
 func BenchmarkLogRoot(b *testing.B) {

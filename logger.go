@@ -342,42 +342,42 @@ func formatMessage(me *message, fo Format) (so string) {
 	return
 }
 
-// DebugM logs a message with the Debug priority.
+// Debug logs a message with the Debug priority.
 func (lo Logger) Debug(me ...interface{}) {
 	Log(lo, Debug, me...)
 }
 
-// InfoM logs a message with the Debug priority.
+// Info logs a message with the Debug priority.
 func (lo Logger) Info(me ...interface{}) {
 	Log(lo, Info, me...)
 }
 
-// NoticeM logs a message with the Debug priority.
+// Notice logs a message with the Debug priority.
 func (lo Logger) Notice(me ...interface{}) {
 	Log(lo, Notice, me...)
 }
 
-// WarningM logs a message with the Debug priority.
+// Warning logs a message with the Debug priority.
 func (lo Logger) Warning(me ...interface{}) {
 	Log(lo, Warning, me...)
 }
 
-// ErrorM logs a message with the Debug priority.
+// Error logs a message with the Debug priority.
 func (lo Logger) Error(me ...interface{}) {
 	Log(lo, Error, me...)
 }
 
-// CriticalM logs a message with the Debug priority.
+// Critical logs a message with the Debug priority.
 func (lo Logger) Critical(me ...interface{}) {
 	Log(lo, Critical, me...)
 }
 
-// AlertM logs a message with the Debug priority.
+// Alert logs a message with the Debug priority.
 func (lo Logger) Alert(me ...interface{}) {
 	Log(lo, Alert, me...)
 }
 
-// EmergencyM logs a message with the Debug priority.
+// Emergency logs a message with the Debug priority.
 func (lo Logger) Emergency(me ...interface{}) {
 	Log(lo, Emergency, me...)
 }

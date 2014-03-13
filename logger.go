@@ -12,6 +12,18 @@ import (
 	"time"
 )
 
+const (
+	colornone   = 0
+	colorred    = 31
+	colorgreen  = 32
+	coloryellow = 33
+	colorblue   = 34
+
+	textnormal = 0
+	textbold   = 1
+	textblink  = 5
+)
+
 // Format represents the format which will be used to print the message
 // for an logger.
 type Format string
@@ -258,12 +270,61 @@ func printMessage(lo logger, pr Priority, wr io.Writer, me ...interface{}) {
 	m := new(message)
 	m.Time = time.Now().Format(string(lo.TimeFormat))
 	m.Logger = lo.Logger
-	m.Priority = priorities[pr]
+	m.Priority = formatPriority(pr)
 	m.Message = fmt.Sprint(me...)
 
 	s := formatMessage(m, lo.Format)
 
 	fmt.Fprint(wr, s)
+}
+
+func formatPriority(pr Priority) string {
+	c, f := getPriorityFormat(pr)
+
+	r := formatText(f)
+	l := formatText(c)
+	p := priorities[pr]
+
+	s := r + l + p + formatReset()
+
+	return s
+}
+
+func formatReset() string {
+	s := formatText(textnormal)
+
+	return s
+}
+
+func formatText(fo int) string {
+	s := fmt.Sprintf("\033[%dm", fo)
+	return s
+}
+
+func getPriorityFormat(pr Priority) (col, fom int) {
+	switch pr {
+	case Debug:
+		col = colornone
+	case Notice:
+		col = colorgreen
+	case Info:
+		col = colorblue
+	case Warning:
+		col = coloryellow
+	case Error:
+		col = coloryellow
+		fom = textbold
+	case Critical:
+		col = colorred
+	case Alert:
+		col = colorred
+		fom = textbold
+	case Emergency:
+		col = colorred
+		fom = textblink
+	}
+
+	return
 }
 
 func formatMessage(me *message, fo Format) (so string) {

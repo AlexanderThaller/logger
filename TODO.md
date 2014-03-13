@@ -1,1 +1,4 @@
 - Allow setting of different output buffer for logging.
+- Make every setting (nocolor, output) configurable for every logger.
+- Some refactoring of the Logger and logger stuff.
+- Performance.

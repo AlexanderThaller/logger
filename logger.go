@@ -50,6 +50,7 @@ const (
 	Critical
 	Alert
 	Emergency
+	Disable
 )
 
 // DefaultPriority of the root logger.
@@ -90,6 +91,7 @@ func init() {
 	priorities[Critical] = "Critical"
 	priorities[Alert] = "Alert"
 	priorities[Emergency] = "Emergency"
+	priorities[Disable] = "Disabled"
 }
 
 // New will return a logger with the given name.

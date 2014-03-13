@@ -1,0 +1,1 @@
+- Allow setting of different output buffer for logging.

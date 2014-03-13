@@ -136,7 +136,7 @@ func TestPrintColors(t *testing.T) {
 	l.Alert("Alert")
 	l.Emergency("Emergency")
 
-	NoColor = true
+	SetNoColor("logger.Test.PrintColors", true)
 	l.Debug("NoColorDebug")
 	l.Info("NoColorInfo")
 	l.Notice("NoColorNotice")
@@ -145,7 +145,6 @@ func TestPrintColors(t *testing.T) {
 	l.Critical("NoColorCritical")
 	l.Alert("NoColorAlert")
 	l.Emergency("NoColorEmergency")
-	NoColor = false
 }
 
 func BenchmarkLogRoot(b *testing.B) {

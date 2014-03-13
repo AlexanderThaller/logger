@@ -35,17 +35,19 @@ type Format string
 type Logger string
 
 type message struct {
-	Time string
 	Logger
-	Priority string
 	Message  string
+	Priority string
+	Time     string
 }
 
 type logger struct {
+	Format
 	Logger
 	Priority
-	Format
 	TimeFormat string
+	NoColor    bool
+	Output     io.Writer
 }
 
 // Priority defines how important a log message is. Loggers will output
@@ -82,19 +84,18 @@ var (
 	priorities     map[Priority]string
 	loggers        map[Logger]logger
 	formattemplate template.Template
-
-	NoColor bool
-	Output  io.Writer
 )
 
 func init() {
 	loggers = make(map[Logger]logger)
-	l := logger{Logger: defroot,
-		Priority:   DefaultPriority,
+	l := logger{
 		Format:     Format(format),
+		Priority:   DefaultPriority,
 		TimeFormat: timeformat,
+		Logger:     defroot,
+		NoColor:    false,
+		Output:     os.Stderr,
 	}
-	Output = os.Stderr
 
 	loggers[defroot] = l
 
@@ -113,32 +114,6 @@ func init() {
 // New will return a logger with the given name.
 func New(na string) (log Logger) {
 	return Logger(na)
-}
-
-// SetLevel sets the priority level for the logger which should be
-// logged.
-func SetLevel(lo Logger, pr Priority) (err error) {
-	err = errors.New("this priority does not exist")
-
-	for k := range priorities {
-		if k == pr {
-			err = nil
-			break
-		}
-	}
-
-	if err != nil {
-		return
-	}
-
-	l := logger{Logger: lo,
-		Priority:   pr,
-		Format:     Format(format),
-		TimeFormat: timeformat,
-	}
-
-	loggers[lo] = l
-	return
 }
 
 // GetLevel returns the priority level of the given logger.
@@ -216,13 +191,20 @@ func ParsePriority(pr string) (Priority, error) {
 		}
 	}
 
-	e := errors.New("Can not parse " + pr + ". Using DefaultPriority")
+	e := errors.New("can not parse priority: do not recognize " + pr)
 	return DefaultPriority, e
 }
 
 // NamePriority returns the string value of the given priority.
-func NamePriority(pr Priority) string {
-	return priorities[pr]
+func NamePriority(pr Priority) (pri string, err error) {
+	err = checkPriority(pr)
+	if err != nil {
+		return
+	}
+
+	pri = priorities[pr]
+
+	return
 }
 
 // SetFormat changes the message format for the given logger. Avaivable
@@ -259,6 +241,50 @@ func SetTimeFormat(lo Logger, fo string) (err error) {
 	return
 }
 
+// SetLevel sets the priority level for the logger which should be
+// logged.
+func SetLevel(lo Logger, pr Priority) (err error) {
+	err = checkPriority(pr)
+	if err != nil {
+		return
+	}
+
+	l := getLogger(lo)
+	l.Priority = pr
+	loggers[lo] = l
+
+	return
+}
+
+func SetNoColor(lo Logger, nc bool) (err error) {
+	l := getLogger(lo)
+	l.NoColor = nc
+	loggers[lo] = l
+
+	return
+}
+
+func SetOutput(lo Logger, ou io.Writer) {
+	l := getLogger(lo)
+	l.Output = ou
+	loggers[lo] = l
+
+	return
+}
+
+func checkPriority(pr Priority) (err error) {
+	err = errors.New("priority does not exist")
+
+	for k := range priorities {
+		if k == pr {
+			err = nil
+			break
+		}
+	}
+
+	return
+}
+
 // Log logs a message using the given logger at a given priority.
 func Log(lo Logger, pr Priority, me ...interface{}) {
 	l := getLogger(lo)
@@ -267,26 +293,26 @@ func Log(lo Logger, pr Priority, me ...interface{}) {
 		return
 	}
 
-	printMessage(l, pr, Output, me...)
+	printMessage(l, pr, me...)
 }
 
-func printMessage(lo logger, pr Priority, wr io.Writer, me ...interface{}) {
+func printMessage(lo logger, pr Priority, me ...interface{}) {
 	m := new(message)
 	m.Time = time.Now().Format(string(lo.TimeFormat))
 	m.Logger = lo.Logger
-	m.Priority = formatPriority(pr)
+	m.Priority = formatPriority(pr, lo.NoColor)
 	m.Message = fmt.Sprint(me...)
 
 	s := formatMessage(m, lo.Format)
 
-	fmt.Fprint(wr, s)
+	fmt.Fprint(lo.Output, s)
 }
 
-func formatPriority(pr Priority) string {
+func formatPriority(pr Priority, nc bool) string {
 	c, f := getPriorityFormat(pr)
 
-	r := formatText(f)
-	l := formatText(c)
+	r := formatText(f, nc)
+	l := formatText(c, nc)
 	p := priorities[pr]
 
 	s := r + l + p + formatReset()
@@ -295,13 +321,13 @@ func formatPriority(pr Priority) string {
 }
 
 func formatReset() string {
-	s := formatText(textnormal)
+	s := formatText(textnormal, false)
 
 	return s
 }
 
-func formatText(fo int) string {
-	if NoColor {
+func formatText(fo int, nc bool) string {
+	if nc {
 		return ""
 	}
 

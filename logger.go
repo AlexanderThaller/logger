@@ -82,6 +82,8 @@ var (
 	priorities     map[Priority]string
 	loggers        map[Logger]logger
 	formattemplate template.Template
+
+	NoColor bool
 )
 
 func init() {
@@ -297,6 +299,10 @@ func formatReset() string {
 }
 
 func formatText(fo int) string {
+	if NoColor {
+		return ""
+	}
+
 	s := fmt.Sprintf("\033[%dm", fo)
 	return s
 }

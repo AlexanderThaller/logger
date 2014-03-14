@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+const (
+	name = "logger"
+)
+
 // Format represents the format which will be used to print the message
 // for an logger.
 type Format string

@@ -5,6 +5,10 @@ import (
 	"testing"
 )
 
+const (
+	namet = name + ".Test"
+)
+
 func TestGetLevel(t *testing.T) {
 	n := New("logger.Test.GetLevel")
 
@@ -145,6 +149,30 @@ func TestPrintColors(t *testing.T) {
 	l.Critical("NoColorCritical")
 	l.Alert("NoColorAlert")
 	l.Emergency("NoColorEmergency")
+}
+
+func TestCheckPriorityOK(t *testing.T) {
+	l := New(namet + ".TestCheckPriority.OK")
+
+	for k := range priorities {
+		l.Info("Checking: ", k)
+
+		e := checkPriority(k)
+		if e != nil {
+			l.Critical(e)
+			t.Fail()
+		}
+	}
+}
+
+func TestCheckPriorityFail(t *testing.T) {
+	l := New(namet + ".TestCheckPriority.FAIL")
+
+	e := checkPriority(Disable + 1)
+	if e == nil {
+		l.Critical("Should not have succeeded")
+		t.Fail()
+	}
 }
 
 func BenchmarkLogRoot(b *testing.B) {

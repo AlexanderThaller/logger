@@ -28,25 +28,27 @@ func init() {
 }
 
 func main() {
-  l := logger.NewLogger("application.main")
+  l := logger.New("application.main")
 
-  logger.NoticeM(l, "Starting")
+  l.Notice("Starting")
 
   // This message will be shown because in the init function we set the
   // level of the "application" logger to Info
-  logger.InfoM(l, "Some infos")
+  l.Info("Some infos")
 
   // This message will be hidden because it is below the logger level
   // Info
-  logger.DebugM(l, "Debug Values")
+  l.Debug("Debug Values")
 
-  logger.SetLevel(l, logger.Debug)
+  // Change the Level for the application.main logger to Debug
+  l.SetLevel(logger.Debug)
 
-  // This message will be shown because we set the level of the "application.main"
-  // logger to Debug
-  logger.DebugM(l, "More debug values")
+  // This message will be shown because we set the level of the
+  // "application.main" logger to Debug
+  l.Debug("More debug values")
 }
 ```
 
 ## Documentation
-The documentation can be found here: <http://godoc.org/github.com/AlexanderThaller/logger>
+The documentation can be found here:
+<http://godoc.org/github.com/AlexanderThaller/logger>

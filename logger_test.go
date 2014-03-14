@@ -202,41 +202,49 @@ func TestCheckPriorityFailDoesNotExist(t *testing.T) {
 	}
 }
 
-func BenchmarkLogRoot(b *testing.B) {
+func BenchmarkLogRootEmergency(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Log(".", Debug, "Test")
+		log(".", Emergency, "Test")
 	}
 }
 
-func BenchmarkLogRootEmergency(b *testing.B) {
+func BenchmarkLogRootEmergencyNoColor(b *testing.B) {
+	SetNoColor(".", true)
+
 	for i := 0; i < b.N; i++ {
-		Log(".", Emergency, "Test")
+		log(".", Emergency, "Test")
+	}
+}
+
+func BenchmarkLogRoot(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		log(".", Debug, "Test")
 	}
 }
 
 func BenchmarkLogChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Log("BenchLogChild", Debug, "Test")
+		log("BenchLogChild", Debug, "Test")
 	}
 }
 
 func BenchmarkLogChildChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Log("BenchLogChildChild.Test", Debug, "Test")
+		log("BenchLogChildChild.Test", Debug, "Test")
 	}
 }
 
 func BenchmarkLogChildAllocated(b *testing.B) {
 	SetLevel("BenchLogChildAllocated", Emergency)
 	for i := 0; i < b.N; i++ {
-		Log("BenchLogChildAllocated", Debug, "Test")
+		log("BenchLogChildAllocated", Debug, "Test")
 	}
 }
 
 func BenchmarkLogChildChildAllocated(b *testing.B) {
 	SetLevel("BenchLogChildChildAllocated.Test", Emergency)
 	for i := 0; i < b.N; i++ {
-		Log("BenchLogChildChildAllocated.Test", Debug, "Test")
+		log("BenchLogChildChildAllocated.Test", Debug, "Test")
 	}
 }
 

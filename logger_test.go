@@ -95,6 +95,42 @@ func TestgetParent(t *testing.T) {
 func TestPrintMessage(t *testing.T) {
 	l := New(namet + ".PrintMessage")
 
+	p := "\033[0m"
+	b := "Test - " + p + p + "Debug" + p + " - "
+
+	m := [][]string{
+		{"", b},
+		{"Test", b + "Test"},
+		{"Test.Test", b + "Test.Test"},
+		{"Test.Test.Test", b + "Test.Test.Test"},
+	}
+
+	r := getLogger("Test")
+	r.Format = "{{.Logger}} - {{.Priority}} - {{.Message}}"
+
+	for _, d := range m {
+		l.Info("Checking: ", d)
+
+		k := d[0]
+		v := d[1]
+
+		var b bytes.Buffer
+		r.Output = &b
+
+		printMessage(r, Debug, k)
+		o := b.String()
+
+		l.Debug("GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+		if o != v {
+			l.Critical("GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+			t.Fail()
+		}
+	}
+}
+
+func TestPrintMessageNoColor(t *testing.T) {
+	l := New(namet + ".PrintMessage")
+
 	m := [][]string{
 		{"", "Test - Debug - "},
 		{"Test", "Test - Debug - Test"},

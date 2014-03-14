@@ -38,7 +38,7 @@ func TestGetLevel(t *testing.T) {
 	n.Info(n, "Finished")
 }
 
-func TestgetParentLevel(t *testing.T) {
+func TestGetParentLevel(t *testing.T) {
 	n := New("logger.Test.getParentLevel")
 
 	n.Info(n, "Starting")
@@ -92,7 +92,7 @@ func TestgetParent(t *testing.T) {
 	n.Info(n, "Finished")
 }
 
-func TestprintMessage(t *testing.T) {
+func TestPrintMessage(t *testing.T) {
 	n := New("logger.Test.printMessage")
 
 	n.Info(n, "Starting")

@@ -238,6 +238,45 @@ func TestCheckPriorityFailDoesNotExist(t *testing.T) {
 	}
 }
 
+func TestGetPriorityFormat(t *testing.T) {
+	l := New(namet + ".GetPriorityFormat")
+
+	m := [][]int{
+		{int(Debug), colornone, textnormal},
+		{int(Notice), colorgreen, textnormal},
+		{int(Info), colorblue, textnormal},
+		{int(Warning), coloryellow, textnormal},
+		{int(Error), coloryellow, textbold},
+		{int(Critical), colorred, textnormal},
+		{int(Alert), colorred, textbold},
+		{int(Emergency), colorred, textblink},
+	}
+
+	for _, d := range m {
+		p := Priority(d[0])
+		n, e := NamePriority(p)
+		if e != nil {
+			l.Alert("Can not name priority: ", e)
+			t.Fail()
+		}
+
+		c := d[1]
+		f := d[2]
+
+		a, b := getPriorityFormat(p)
+
+		if c != a {
+			l.Critical("Wrong color for ", n, ", EXPECTED: ", c, ", GOT: ", a)
+			t.Fail()
+		}
+
+		if f != b {
+			l.Critical("Wrong format for ", n, ", EXPECTED: ", c, ", GOT: ", b)
+			t.Fail()
+		}
+	}
+}
+
 func BenchmarkLogRootEmergency(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		log(".", Emergency, "Test")

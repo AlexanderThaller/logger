@@ -152,12 +152,13 @@ func TestPrintColors(t *testing.T) {
 }
 
 func TestCheckPriorityOK(t *testing.T) {
-	l := New(namet + ".TestCheckPriority.OK")
+	l := New(namet + ".CheckPriority.OK")
 
 	for k := range priorities {
 		l.Info("Checking: ", k)
 
 		e := checkPriority(k)
+		l.Debug("Return of ", k, ": ", e)
 		if e != nil {
 			l.Critical(e)
 			t.Fail()
@@ -166,12 +167,37 @@ func TestCheckPriorityOK(t *testing.T) {
 }
 
 func TestCheckPriorityFail(t *testing.T) {
-	l := New(namet + ".TestCheckPriority.FAIL")
+	l := New(namet + ".CheckPriority.FAIL")
 
-	e := checkPriority(Disable + 1)
+	k := Disable + 1
+
+	l.Info("Checking: ", k)
+
+	e := checkPriority(k)
+	l.Debug("Return of ", k, ": ", e)
 	if e == nil {
 		l.Critical("Should not have succeeded")
 		t.Fail()
+		return
+	}
+}
+
+func TestCheckPriorityFailDoesNotExist(t *testing.T) {
+	l := New(namet + ".CheckPriority.FAIL.DoesNotExist")
+
+	k := Disable + 1
+	x := "priority does not exist"
+
+	l.Info("Checking: ", k)
+
+	e := checkPriority(k)
+	l.Debug("Return of ", k, ": ", e)
+	if e != nil {
+
+		if e.Error() != x {
+			l.Critical("Wrong error, EXPECTED: ", x, ", GOT: ", e.Error())
+			t.Fail()
+		}
 	}
 }
 

@@ -4,24 +4,10 @@ package logger
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"os"
-	"strings"
 	"text/template"
 	"time"
-)
-
-const (
-	colornone   = 0
-	colorred    = 31
-	colorgreen  = 32
-	coloryellow = 33
-	colorblue   = 34
-
-	textnormal = 0
-	textbold   = 1
-	textblink  = 5
 )
 
 // Format represents the format which will be used to print the message
@@ -33,22 +19,6 @@ type Format string
 // parent if it has none. The hirachy of loggers is represented through
 // sepperation with dots ('.'). The root logger has the name '.'.
 type Logger string
-
-type message struct {
-	Logger
-	Message  string
-	Priority string
-	Time     string
-}
-
-type logger struct {
-	Format
-	Logger
-	Priority
-	TimeFormat string
-	NoColor    bool
-	Output     io.Writer
-}
 
 // Priority defines how important a log message is. Loggers will output
 // messages which are above their priority level.
@@ -71,6 +41,22 @@ const (
 const (
 	DefaultPriority Priority = Notice
 )
+
+type message struct {
+	Logger
+	Message  string
+	Priority string
+	Time     string
+}
+
+type logger struct {
+	Format
+	Logger
+	Priority
+	TimeFormat string
+	NoColor    bool
+	Output     io.Writer
+}
 
 const (
 	defroot      = Logger(".")
@@ -128,85 +114,6 @@ func GetLevel(lo Logger) (pri Priority) {
 	return
 }
 
-func getParentLevel(lo Logger) (pri Priority) {
-	p := getParent(lo)
-	pri = GetLevel(p)
-
-	return
-}
-
-func getParent(lo Logger) (log Logger) {
-	// Return root if root
-	if lo == defroot {
-		log = defroot
-		return
-	}
-
-	s := strings.Split(string(lo), defseperator)
-
-	// Return root if first level logger
-	if len(s) == 1 {
-		log = defroot
-		return
-	}
-
-	// Return root if parent is empty
-	if s[0] == "" {
-		log = defroot
-		return
-	}
-
-	l := len(s) - 1
-	z := s[0:l]
-
-	log = Logger(strings.Join(z, defseperator))
-
-	return
-}
-
-func getLogger(lo Logger) (log logger) {
-	l, e := loggers[lo]
-	if e {
-		log = l
-	} else {
-		log = getParentLogger(lo)
-	}
-
-	return
-}
-
-func getParentLogger(lo Logger) (log logger) {
-	l := getParent(lo)
-	log = getLogger(l)
-	log.Logger = lo
-
-	return
-}
-
-// ParsePriority tries to parse the priority by the given string.
-func ParsePriority(pr string) (Priority, error) {
-	for k, v := range priorities {
-		if v == pr {
-			return k, nil
-		}
-	}
-
-	e := errors.New("can not parse priority: do not recognize " + pr)
-	return DefaultPriority, e
-}
-
-// NamePriority returns the string value of the given priority.
-func NamePriority(pr Priority) (pri string, err error) {
-	err = checkPriority(pr)
-	if err != nil {
-		return
-	}
-
-	pri = priorities[pr]
-
-	return
-}
-
 // SetFormat changes the message format for the given logger. Avaivable
 // fields are:
 //
@@ -256,6 +163,8 @@ func SetLevel(lo Logger, pr Priority) (err error) {
 	return
 }
 
+// SetNoColor sets the nocolor flag for the given logger. If true no
+// colors will be printed for the logger.
 func SetNoColor(lo Logger, nc bool) (err error) {
 	l := getLogger(lo)
 	l.NoColor = nc
@@ -264,6 +173,8 @@ func SetNoColor(lo Logger, nc bool) (err error) {
 	return
 }
 
+// SetOutput sets the output parameter of the logger to the given
+// io.Writer. The default is os.Stderr.
 func SetOutput(lo Logger, ou io.Writer) {
 	l := getLogger(lo)
 	l.Output = ou
@@ -272,15 +183,26 @@ func SetOutput(lo Logger, ou io.Writer) {
 	return
 }
 
-func checkPriority(pr Priority) (err error) {
-	err = errors.New("priority does not exist")
-
-	for k := range priorities {
-		if k == pr {
-			err = nil
-			break
+// ParsePriority tries to parse the priority by the given string.
+func ParsePriority(pr string) (Priority, error) {
+	for k, v := range priorities {
+		if v == pr {
+			return k, nil
 		}
 	}
+
+	e := errors.New("can not parse priority: do not recognize " + pr)
+	return DefaultPriority, e
+}
+
+// NamePriority returns the string value of the given priority.
+func NamePriority(pr Priority) (pri string, err error) {
+	err = checkPriority(pr)
+	if err != nil {
+		return
+	}
+
+	pri = priorities[pr]
 
 	return
 }
@@ -294,80 +216,6 @@ func Log(lo Logger, pr Priority, me ...interface{}) {
 	}
 
 	printMessage(l, pr, me...)
-}
-
-func printMessage(lo logger, pr Priority, me ...interface{}) {
-	m := new(message)
-	m.Time = time.Now().Format(string(lo.TimeFormat))
-	m.Logger = lo.Logger
-	m.Priority = formatPriority(pr, lo.NoColor)
-	m.Message = fmt.Sprint(me...)
-
-	s := formatMessage(m, lo.Format)
-
-	fmt.Fprint(lo.Output, s)
-}
-
-func formatPriority(pr Priority, nc bool) string {
-	c, f := getPriorityFormat(pr)
-
-	r := formatText(f, nc)
-	l := formatText(c, nc)
-	p := priorities[pr]
-
-	s := r + l + p + formatReset()
-
-	return s
-}
-
-func formatReset() string {
-	s := formatText(textnormal, false)
-
-	return s
-}
-
-func formatText(fo int, nc bool) string {
-	if nc {
-		return ""
-	}
-
-	s := fmt.Sprintf("\033[%dm", fo)
-	return s
-}
-
-func getPriorityFormat(pr Priority) (col, fom int) {
-	switch pr {
-	case Debug:
-		col = colornone
-	case Notice:
-		col = colorgreen
-	case Info:
-		col = colorblue
-	case Warning:
-		col = coloryellow
-	case Error:
-		col = coloryellow
-		fom = textbold
-	case Critical:
-		col = colorred
-	case Alert:
-		col = colorred
-		fom = textbold
-	case Emergency:
-		col = colorred
-		fom = textblink
-	}
-
-	return
-}
-
-func formatMessage(me *message, fo Format) (so string) {
-	so = strings.Replace(string(fo), "{{.Time}}", me.Time, -1)
-	so = strings.Replace(so, "{{.Logger}}", string(me.Logger), -1)
-	so = strings.Replace(so, "{{.Priority}}", me.Priority, -1)
-	so = strings.Replace(so, "{{.Message}}", me.Message, -1)
-
-	return
 }
 
 // Debug logs a message with the Debug priority.

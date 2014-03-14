@@ -24,13 +24,13 @@ func formatPriority(pr Priority, nc bool) string {
 	l := formatText(c, nc)
 	p := priorities[pr]
 
-	s := r + l + p + formatReset()
+	s := r + l + p + formatReset(nc)
 
 	return s
 }
 
-func formatReset() string {
-	s := formatText(textnormal, false)
+func formatReset(nc bool) string {
+	s := formatText(textnormal, nc)
 
 	return s
 }

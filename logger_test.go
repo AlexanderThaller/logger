@@ -93,9 +93,8 @@ func TestgetParent(t *testing.T) {
 }
 
 func TestPrintMessage(t *testing.T) {
-	n := New("logger.Test.printMessage")
+	l := New(namet + ".PrintMessage")
 
-	n.Info(n, "Starting")
 	m := [][]string{
 		{"", "Test - Debug - "},
 		{"Test", "Test - Debug - Test"},
@@ -103,26 +102,28 @@ func TestPrintMessage(t *testing.T) {
 		{"Test.Test.Test", "Test - Debug - Test.Test.Test"},
 	}
 
-	SetFormat("Test", "{{.Logger}} - {{.Priority}} - {{.Message}}")
-	l := getLogger("Test")
+	r := getLogger("Test")
+	r.Format = "{{.Logger}} - {{.Priority}} - {{.Message}}"
+	r.NoColor = true
 
-	for i := range m {
-		a := m[i]
+	for _, d := range m {
+		l.Info("Checking: ", d)
 
-		k := a[0]
-		v := a[1]
+		k := d[0]
+		v := d[1]
 
 		var b bytes.Buffer
-		printMessage(l, Debug, &b, k)
+		r.Output = &b
+
+		printMessage(r, Debug, k)
 		o := b.String()
+
+		l.Debug("GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 		if o != v {
-			n.Error(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+			l.Critical("GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 			t.Fail()
 		}
-		n.Debug(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
 	}
-
-	n.Info(n, "Finished")
 }
 
 func TestPrintColors(t *testing.T) {
@@ -278,10 +279,11 @@ func BenchmarkGetParentChildChildChildChildChild(b *testing.B) {
 func BenchmarkPrintMessage(b *testing.B) {
 	var a bytes.Buffer
 	l := getLogger("BenchprintMessage")
+	l.Output = &a
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		printMessage(l, Debug, &a, "Message")
+		printMessage(l, Debug, "Message")
 	}
 }
 

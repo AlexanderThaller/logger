@@ -117,6 +117,31 @@ func TestGetParentOutputSame(t *testing.T) {
 	}
 }
 
+func TestGetParentOutputDifferent(t *testing.T) {
+	l := New(namet + ".GetParent.Output.Different")
+
+	p := Logger("Test")
+	p.SetFormat("{{.Message}}")
+
+	c := Logger("Test.Test")
+	l.Info("Parent: '", getParent(c), "'")
+
+	var b bytes.Buffer
+	c.SetOutput(&b)
+
+	p.Notice("Test Parent,")
+	c.Notice("Test Child")
+
+	o := b.String()
+	v := "Test Child"
+
+	l.Debug("GOT: ", o, ", EXPECTED: ", v)
+	if o != v {
+		l.Critical("GOT: ", o, ", EXPECTED: ", v)
+		t.Fail()
+	}
+}
+
 func TestPrintMessage(t *testing.T) {
 	l := New(namet + ".PrintMessage")
 

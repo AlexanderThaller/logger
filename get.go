@@ -38,25 +38,6 @@ func getParent(lo Logger) (log Logger) {
 	return
 }
 
-func getLogger(lo Logger) (log logger) {
-	l, e := loggers[lo]
-	if e {
-		log = l
-	} else {
-		log = getParentLogger(lo)
-	}
-
-	return
-}
-
-func getParentLogger(lo Logger) (log logger) {
-	l := getParent(lo)
-	log = getLogger(l)
-	log.Logger = lo
-
-	return
-}
-
 func getPriorityFormat(pr Priority) (col, fom int) {
 	switch pr {
 	case Debug:

@@ -62,7 +62,7 @@ func TestGetParentLevel(t *testing.T) {
 	n.Info(n, "Finished")
 }
 
-func TestgetParent(t *testing.T) {
+func TestGetParent(t *testing.T) {
 	n := New("logger.Test.getParent")
 
 	n.Info(n, "Starting")

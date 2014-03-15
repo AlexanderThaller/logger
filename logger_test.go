@@ -142,6 +142,32 @@ func TestGetParentOutputDifferent(t *testing.T) {
 	}
 }
 
+func TestGetParentOutputInheritance(t *testing.T) {
+	l := New(namet + ".GetParent.Output.Inheritance")
+
+	p := Logger("Test")
+	p.SetFormat("{{.Message}}")
+
+	c := Logger("Test.Test")
+	c.SetLevel(Debug)
+	l.Info("Parent: '", getParent(c), "'")
+
+	var b bytes.Buffer
+	p.SetOutput(&b)
+
+	p.Notice("Test Parent,")
+	c.Notice("Test Child")
+
+	o := b.String()
+	v := "TestParent,Test Child"
+
+	l.Debug("GOT: ", o, ", EXPECTED: ", v)
+	if o != v {
+		l.Critical("GOT: ", o, ", EXPECTED: ", v)
+		t.Fail()
+	}
+}
+
 func TestPrintMessage(t *testing.T) {
 	l := New(namet + ".PrintMessage")
 

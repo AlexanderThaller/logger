@@ -11,6 +11,10 @@ const (
 	defseperator = "."
 )
 
+var (
+	defout = os.Stderr
+)
+
 type logger struct {
 	Format
 	Logger
@@ -35,7 +39,7 @@ func newLoggers() loggers {
 		TimeFormat: timeformat,
 		Logger:     defroot,
 		NoColor:    false,
-		Output:     os.Stderr,
+		Output:     defout,
 	}
 
 	l.data[defroot] = r

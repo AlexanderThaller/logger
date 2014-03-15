@@ -309,6 +309,12 @@ func BenchmarkLogChildChild(b *testing.B) {
 	}
 }
 
+func BenchmarkLogChildChildChild(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		logMessage("BenchLogChildChildChild.Test.Test", Debug, "Test")
+	}
+}
+
 func BenchmarkLogChildAllocated(b *testing.B) {
 	SetLevel("BenchLogChildAllocated", Emergency)
 	for i := 0; i < b.N; i++ {

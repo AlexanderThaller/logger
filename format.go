@@ -17,6 +17,13 @@ const (
 	textblink  = 5
 )
 
+type message struct {
+	Logger
+	Message  string
+	Priority string
+	Time     string
+}
+
 func formatPriority(pr Priority, nc bool) string {
 	c, f := getPriorityFormat(pr)
 

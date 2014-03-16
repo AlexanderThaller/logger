@@ -38,6 +38,21 @@ func TestGetLevel(t *testing.T) {
 	n.Info(n, "Finished")
 }
 
+func TestSetLevelFail(t *testing.T) {
+	l := New(namet + ".SetLevel.Fail")
+
+	m := Disable + 1
+	v := "priority does not exist"
+
+	n := New("Test")
+	o := n.SetLevel(m)
+
+	if v != o.Error() {
+		l.Critical("GOT: '", o, "', EXPECED: '", v, "'")
+		t.Fail()
+	}
+}
+
 func TestGetParent(t *testing.T) {
 	n := New("logger.Test.getParent")
 

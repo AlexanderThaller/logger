@@ -115,7 +115,7 @@ func (lo *loggers) SetTimeFormat(na Logger, fo string) (err error) {
 	return
 }
 
-func (lo *loggers) SetNoColor(na Logger, nc bool) (err error) {
+func (lo *loggers) SetNoColor(na Logger, nc bool) {
 	l := lo.GetLogger(na)
 	l.NoColor = nc
 	lo.SetLogger(na, l)

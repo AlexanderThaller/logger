@@ -117,8 +117,8 @@ func SetTimeFormat(lo Logger, fo string) error {
 
 // SetNoColor sets the nocolor flag for the given logger. If true no
 // colors will be printed for the logger.
-func SetNoColor(lo Logger, nc bool) error {
-	return list.SetNoColor(lo, nc)
+func SetNoColor(lo Logger, nc bool) {
+	list.SetNoColor(lo, nc)
 }
 
 // SetOutput sets the output parameter of the logger to the given
@@ -243,8 +243,8 @@ func (lo Logger) SetFormat(fo Format) {
 // format for the Logger
 //
 // The default format is: RFC3339
-func (lo Logger) SetTimeFormat(fo string) {
-	SetTimeFormat(lo, fo)
+func (lo Logger) SetTimeFormat(fo string) error {
+	return SetTimeFormat(lo, fo)
 }
 
 // SetNoColor sets the nocolor flag for the given logger. If true no

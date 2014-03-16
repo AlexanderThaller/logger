@@ -133,7 +133,7 @@ func TestGetParentOutputDifferent(t *testing.T) {
 	}
 }
 
-func TestGetParentOutputInheritance(t *testing.T) {
+func TestgetParentOutputInheritance(t *testing.T) {
 	l := New(namet + ".GetParent.Output.Inheritance")
 
 	p := Logger("Test")

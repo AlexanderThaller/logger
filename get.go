@@ -2,13 +2,6 @@ package logger
 
 import "strings"
 
-func getParentLevel(lo Logger) (pri Priority) {
-	p := getParent(lo)
-	pri = GetLevel(p)
-
-	return
-}
-
 func getParent(lo Logger) (log Logger) {
 	// Return root if root
 	if lo == defroot {
@@ -34,25 +27,6 @@ func getParent(lo Logger) (log Logger) {
 	z := s[0:l]
 
 	log = Logger(strings.Join(z, defseperator))
-
-	return
-}
-
-func getLogger(lo Logger) (log logger) {
-	l, e := loggers[lo]
-	if e {
-		log = l
-	} else {
-		log = getParentLogger(lo)
-	}
-
-	return
-}
-
-func getParentLogger(lo Logger) (log logger) {
-	l := getParent(lo)
-	log = getLogger(l)
-	log.Logger = lo
 
 	return
 }

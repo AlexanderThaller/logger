@@ -2,13 +2,6 @@ package logger
 
 import "strings"
 
-func getParentLevel(lo Logger) (pri Priority) {
-	p := getParent(lo)
-	pri = GetLevel(p)
-
-	return
-}
-
 func getParent(lo Logger) (log Logger) {
 	// Return root if root
 	if lo == defroot {

@@ -38,30 +38,6 @@ func TestGetLevel(t *testing.T) {
 	n.Info(n, "Finished")
 }
 
-func TestGetParentLevel(t *testing.T) {
-	n := New("logger.Test.getParentLevel")
-
-	n.Info(n, "Starting")
-	m := make(map[Logger]Priority)
-	m["."] = DefaultPriority
-	m["Test"] = DefaultPriority
-	m["Test.Test"] = DefaultPriority
-
-	SetLevel("Test2", Emergency)
-	m["Test2"] = DefaultPriority
-	m["Test2.Test"] = Emergency
-
-	for k, v := range m {
-		o := getParentLevel(k)
-		if o != v {
-			n.Error(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
-			t.Fail()
-		}
-		n.Debug(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
-	}
-	n.Info(n, "Finished")
-}
-
 func TestGetParent(t *testing.T) {
 	n := New("logger.Test.getParent")
 

@@ -53,6 +53,25 @@ func TestSetLevelFail(t *testing.T) {
 	}
 }
 
+func TestSetTimeFormat(t *testing.T) {
+	l := New(namet + ".SetTimeFormat")
+
+	m := "2005"
+	v := ""
+
+	n := New("Test")
+	o := n.SetTimeFormat(m)
+
+	if o == nil {
+		return
+	}
+
+	if v != o.Error() {
+		l.Critical("GOT: '", o, "', EXPECED: '", v, "'")
+		t.Fail()
+	}
+}
+
 func TestGetParent(t *testing.T) {
 	n := New("logger.Test.getParent")
 

@@ -69,6 +69,26 @@ func init() {
 	priorities[Disable] = "Disabled"
 }
 
+// ImportLoggers sets the LogLevel for the given Loggers.
+func ImportLoggers(lo map[Logger]string) (err error) {
+	if lo == nil {
+		err = errors.New("the loglevel map is nil")
+		return
+	}
+
+	for k, v := range lo {
+		p, e := ParsePriority(v)
+		if e != nil {
+			err = errors.New("can not parse priority: " + e.Error())
+			return
+		}
+
+		SetLevel(k, p)
+	}
+
+	return
+}
+
 // New will return a logger with the given name.
 func New(na string) (log Logger) {
 	return Logger(na)

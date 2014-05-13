@@ -29,7 +29,8 @@ type Priority int
 
 // Different priority levels ordered by their severity.
 const (
-	Debug Priority = iota
+	Trace Priority = iota
+	Debug
 	Info
 	Notice
 	Warning
@@ -58,6 +59,7 @@ func init() {
 	list = newLoggers()
 
 	priorities = make(map[Priority]string)
+	priorities[Trace] = "Trace"
 	priorities[Debug] = "Debug"
 	priorities[Info] = "Info"
 	priorities[Notice] = "Notice"
@@ -184,6 +186,11 @@ func logMessage(lo Logger, pr Priority, me ...interface{}) {
 // Log logs a message with the given priority.
 func (lo Logger) Log(pr Priority, me ...interface{}) {
 	logMessage(lo, pr, me)
+}
+
+// Trace logs a message with the Trace priority.
+func (lo Logger) Trace(me ...interface{}) {
+	logMessage(lo, Trace, me...)
 }
 
 // Debug logs a message with the Debug priority.

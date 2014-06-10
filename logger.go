@@ -5,6 +5,7 @@ package logger
 import (
 	"errors"
 	"io"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -43,7 +44,8 @@ const (
 
 // DefaultPriority of the root logger.
 const (
-	DefaultPriority Priority = Notice
+	DefaultPriority   Priority = Notice
+	DefaultSepperator          = "."
 )
 
 var (
@@ -92,8 +94,9 @@ func ImportLoggers(lo map[Logger]string) (err error) {
 }
 
 // New will return a logger with the given name.
-func New(na string) (log Logger) {
-	return Logger(na)
+func New(na ...string) (log Logger) {
+	s := strings.Join(na, DefaultSepperator)
+	return Logger(s)
 }
 
 // GetLevel returns the priority level of the given logger.

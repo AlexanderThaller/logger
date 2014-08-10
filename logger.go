@@ -56,7 +56,9 @@ var (
 	list           loggers
 	formattemplate template.Template
 
-	SaveLoggerLevels bool = true
+	// SaveLoggerLevels will make the package save loggers which are only defined
+	// by their parents if it is set to true.
+	SaveLoggerLevels = true
 )
 
 func init() {

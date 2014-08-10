@@ -5,5 +5,5 @@ go:
 
 before_install:
   - go get github.com/AlexanderThaller/goimports
-  - go get github.com/AlexanderThaller/lint
+  - go get github.com/AlexanderThaller/lint/golint
   - export PATH=$HOME/gopath/bin:$PATH

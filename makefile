@@ -1,11 +1,14 @@
 default:
 	make format
 	make test
+	make style
 
 format:
 	gofmt -s=true -w=true *.go
 	goimports -w=true *.go
-# golint *.go */*/*.go
+
+style:
+	golint *.go
 
 test:
 	go test -test.v=true

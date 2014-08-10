@@ -87,8 +87,7 @@ func ImportLoggers(lo map[Logger]string) (err error) {
 	for k, v := range lo {
 		p, e := ParsePriority(v)
 		if e != nil {
-			err = errors.New("can not parse priority: " + e.Error())
-			return
+			return e
 		}
 
 		SetLevel(k, p)

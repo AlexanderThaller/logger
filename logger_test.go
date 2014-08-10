@@ -377,6 +377,20 @@ func BenchmarkLogRootEmergencyNoColor(b *testing.B) {
 	}
 }
 
+func BenchmarkGetLogger(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		list.GetLogger("BenchmarkGetLogger")
+	}
+}
+
+func BenchmarkGetLoggerNoSaving(b *testing.B) {
+	SaveLoggerLevels = false
+	for i := 0; i < b.N; i++ {
+		list.GetLogger("BenchmarkGetLoggerNoSaving")
+	}
+	SaveLoggerLevels = true
+}
+
 func BenchmarkLogRoot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		logMessage(".", Debug, "Test")

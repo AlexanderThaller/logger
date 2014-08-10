@@ -55,6 +55,8 @@ var (
 	priorities     map[Priority]string
 	list           loggers
 	formattemplate template.Template
+
+	SaveLoggerLevels bool = true
 )
 
 func init() {

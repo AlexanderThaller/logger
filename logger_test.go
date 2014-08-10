@@ -38,31 +38,41 @@ func TestGetLevel(t *testing.T) {
 	n.Info(n, "Finished")
 }
 
-func TestGetParentLevel(t *testing.T) {
-	n := New("logger.Test.getParentLevel")
+func TestSetLevelFail(t *testing.T) {
+	l := New(namet + ".SetLevel.Fail")
 
-	n.Info(n, "Starting")
-	m := make(map[Logger]Priority)
-	m["."] = DefaultPriority
-	m["Test"] = DefaultPriority
-	m["Test.Test"] = DefaultPriority
+	m := Disable + 1
+	v := "priority does not exist"
 
-	SetLevel("Test2", Emergency)
-	m["Test2"] = DefaultPriority
-	m["Test2.Test"] = Emergency
+	n := New("Test")
+	o := n.SetLevel(m)
 
-	for k, v := range m {
-		o := getParentLevel(k)
-		if o != v {
-			n.Error(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
-			t.Fail()
-		}
-		n.Debug(n, "GOT: '", o, "', EXPECED: '", v, "'", ", KEY: '", k, "'")
+	if v != o.Error() {
+		l.Critical("GOT: '", o, "', EXPECED: '", v, "'")
+		t.Fail()
 	}
-	n.Info(n, "Finished")
 }
 
-func TestgetParent(t *testing.T) {
+func TestSetTimeFormat(t *testing.T) {
+	l := New(namet + ".SetTimeFormat")
+
+	m := "2005"
+	v := ""
+
+	n := New("Test")
+	o := n.SetTimeFormat(m)
+
+	if o == nil {
+		return
+	}
+
+	if v != o.Error() {
+		l.Critical("GOT: '", o, "', EXPECED: '", v, "'")
+		t.Fail()
+	}
+}
+
+func TestGetParent(t *testing.T) {
 	n := New("logger.Test.getParent")
 
 	n.Info(n, "Starting")
@@ -92,6 +102,82 @@ func TestgetParent(t *testing.T) {
 	n.Info(n, "Finished")
 }
 
+func TestGetParentOutputSame(t *testing.T) {
+	l := New(namet + ".GetParent.Output.Same")
+
+	p := Logger("Test")
+	p.SetFormat("{{.Message}}")
+
+	c := Logger("Test.Test")
+	l.Info("Parent: '", getParent(c), "'")
+
+	var b bytes.Buffer
+	p.SetOutput(&b)
+
+	p.Notice("Test Parent,")
+	c.Notice("Test Child")
+
+	o := b.String()
+	v := "Test Parent,Test Child"
+
+	l.Debug("GOT: ", o, ", EXPECTED: ", v)
+	if o != v {
+		l.Critical("GOT: ", o, ", EXPECTED: ", v)
+		t.Fail()
+	}
+}
+
+func TestGetParentOutputDifferent(t *testing.T) {
+	l := New(namet + ".GetParent.Output.Different")
+
+	p := Logger("Test")
+	p.SetFormat("{{.Message}}")
+
+	c := Logger("Test.Test")
+	l.Info("Parent: '", getParent(c), "'")
+
+	var b bytes.Buffer
+	c.SetOutput(&b)
+
+	p.Notice("Test Parent,")
+	c.Notice("Test Child")
+
+	o := b.String()
+	v := "Test Child"
+
+	l.Debug("GOT: ", o, ", EXPECTED: ", v)
+	if o != v {
+		l.Critical("GOT: ", o, ", EXPECTED: ", v)
+		t.Fail()
+	}
+}
+
+func TestgetParentOutputInheritance(t *testing.T) {
+	l := New(namet + ".GetParent.Output.Inheritance")
+
+	p := Logger("Test")
+	p.SetFormat("{{.Message}}")
+
+	c := Logger("Test.Test")
+	c.SetLevel(Debug)
+	l.Info("Parent: '", getParent(c), "'")
+
+	var b bytes.Buffer
+	p.SetOutput(&b)
+
+	p.Notice("Test Parent,")
+	c.Notice("Test Child")
+
+	o := b.String()
+	v := "TestParent,Test Child"
+
+	l.Debug("GOT: ", o, ", EXPECTED: ", v)
+	if o != v {
+		l.Critical("GOT: ", o, ", EXPECTED: ", v)
+		t.Fail()
+	}
+}
+
 func TestPrintMessage(t *testing.T) {
 	l := New(namet + ".PrintMessage")
 
@@ -105,7 +191,7 @@ func TestPrintMessage(t *testing.T) {
 		{"Test.Test.Test", b + "Test.Test.Test"},
 	}
 
-	r := getLogger("Test")
+	r := list.GetLogger("Test")
 	r.Format = "{{.Logger}} - {{.Priority}} - {{.Message}}"
 
 	for _, d := range m {
@@ -138,7 +224,7 @@ func TestPrintMessageNoColor(t *testing.T) {
 		{"Test.Test.Test", "Test - Debug - Test.Test.Test"},
 	}
 
-	r := getLogger("Test")
+	r := list.GetLogger("Test")
 	r.Format = "{{.Logger}} - {{.Priority}} - {{.Message}}"
 	r.NoColor = true
 
@@ -279,7 +365,7 @@ func TestGetPriorityFormat(t *testing.T) {
 
 func BenchmarkLogRootEmergency(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		log(".", Emergency, "Test")
+		logMessage(".", Emergency, "Test")
 	}
 }
 
@@ -287,39 +373,59 @@ func BenchmarkLogRootEmergencyNoColor(b *testing.B) {
 	SetNoColor(".", true)
 
 	for i := 0; i < b.N; i++ {
-		log(".", Emergency, "Test")
+		logMessage(".", Emergency, "Test")
 	}
+}
+
+func BenchmarkGetLogger(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		list.GetLogger("BenchmarkGetLogger")
+	}
+}
+
+func BenchmarkGetLoggerNoSaving(b *testing.B) {
+	SaveLoggerLevels = false
+	for i := 0; i < b.N; i++ {
+		list.GetLogger("BenchmarkGetLoggerNoSaving")
+	}
+	SaveLoggerLevels = true
 }
 
 func BenchmarkLogRoot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		log(".", Debug, "Test")
+		logMessage(".", Debug, "Test")
 	}
 }
 
 func BenchmarkLogChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		log("BenchLogChild", Debug, "Test")
+		logMessage("BenchLogChild", Debug, "Test")
 	}
 }
 
 func BenchmarkLogChildChild(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		log("BenchLogChildChild.Test", Debug, "Test")
+		logMessage("BenchLogChildChild.Test", Debug, "Test")
+	}
+}
+
+func BenchmarkLogChildChildChild(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		logMessage("BenchLogChildChildChild.Test.Test", Debug, "Test")
 	}
 }
 
 func BenchmarkLogChildAllocated(b *testing.B) {
 	SetLevel("BenchLogChildAllocated", Emergency)
 	for i := 0; i < b.N; i++ {
-		log("BenchLogChildAllocated", Debug, "Test")
+		logMessage("BenchLogChildAllocated", Debug, "Test")
 	}
 }
 
 func BenchmarkLogChildChildAllocated(b *testing.B) {
 	SetLevel("BenchLogChildChildAllocated.Test", Emergency)
 	for i := 0; i < b.N; i++ {
-		log("BenchLogChildChildAllocated.Test", Debug, "Test")
+		logMessage("BenchLogChildChildAllocated.Test", Debug, "Test")
 	}
 }
 
@@ -361,7 +467,7 @@ func BenchmarkGetParentChildChildChildChildChild(b *testing.B) {
 
 func BenchmarkPrintMessage(b *testing.B) {
 	var a bytes.Buffer
-	l := getLogger("BenchprintMessage")
+	l := list.GetLogger("BenchprintMessage")
 	l.Output = &a
 
 	b.ResetTimer()
@@ -371,7 +477,7 @@ func BenchmarkPrintMessage(b *testing.B) {
 }
 
 func BenchmarkFormatMessage(b *testing.B) {
-	l := getLogger("BenchformatMessage")
+	l := list.GetLogger("BenchformatMessage")
 
 	m := new(message)
 	m.Time = "Mo 30 Sep 2013 20:29:19 CEST"

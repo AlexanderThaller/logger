@@ -5,7 +5,7 @@ package logger
 import (
 	"errors"
 	"io"
-	"os"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -30,7 +30,8 @@ type Priority int
 
 // Different priority levels ordered by their severity.
 const (
-	Debug Priority = iota
+	Trace Priority = iota
+	Debug
 	Info
 	Notice
 	Warning
@@ -43,28 +44,8 @@ const (
 
 // DefaultPriority of the root logger.
 const (
-	DefaultPriority Priority = Notice
-)
-
-type message struct {
-	Logger
-	Message  string
-	Priority string
-	Time     string
-}
-
-type logger struct {
-	Format
-	Logger
-	Priority
-	TimeFormat string
-	NoColor    bool
-	Output     io.Writer
-}
-
-const (
-	defroot      = Logger(".")
-	defseperator = "."
+	DefaultPriority   Priority = Notice
+	DefaultSepperator          = "."
 )
 
 var (
@@ -72,24 +53,19 @@ var (
 	timeformat = time.RFC3339
 
 	priorities     map[Priority]string
-	loggers        map[Logger]logger
+	list           loggers
 	formattemplate template.Template
+
+	// SaveLoggerLevels will make the package save loggers which are only defined
+	// by their parents if it is set to true.
+	SaveLoggerLevels = true
 )
 
 func init() {
-	loggers = make(map[Logger]logger)
-	l := logger{
-		Format:     Format(format),
-		Priority:   DefaultPriority,
-		TimeFormat: timeformat,
-		Logger:     defroot,
-		NoColor:    false,
-		Output:     os.Stderr,
-	}
-
-	loggers[defroot] = l
+	list = newLoggers()
 
 	priorities = make(map[Priority]string)
+	priorities[Trace] = "Trace"
 	priorities[Debug] = "Debug"
 	priorities[Info] = "Info"
 	priorities[Notice] = "Notice"
@@ -101,33 +77,43 @@ func init() {
 	priorities[Disable] = "Disabled"
 }
 
-// New will return a logger with the given name.
-func New(na string) (log Logger) {
-	return Logger(na)
-}
+// ImportLoggers sets the LogLevel for the given Loggers.
+func ImportLoggers(lo map[Logger]string) (err error) {
+	if lo == nil {
+		err = errors.New("the loglevel map is nil")
+		return
+	}
 
-// GetLevel returns the priority level of the given logger.
-func GetLevel(lo Logger) (pri Priority) {
-	l, e := loggers[lo]
-	if e {
-		pri = l.Priority
-	} else {
-		pri = getParentLevel(lo)
+	for k, v := range lo {
+		p, e := ParsePriority(v)
+		if e != nil {
+			err = errors.New("can not parse priority: " + e.Error())
+			return
+		}
+
+		SetLevel(k, p)
 	}
 
 	return
 }
 
+// New will return a logger with the given name.
+func New(na ...string) (log Logger) {
+	s := strings.Join(na, DefaultSepperator)
+	return Logger(s)
+}
+
+// GetLevel returns the priority level of the given logger.
+func GetLevel(lo Logger) (pri Priority) {
+	return list.GetLevel(lo)
+}
+
 // SetLevel sets the priority level for the given logger.
 func SetLevel(lo Logger, pr Priority) (err error) {
-	err = checkPriority(pr)
+	err = list.SetLevel(lo, pr)
 	if err != nil {
 		return
 	}
-
-	l := getLogger(lo)
-	l.Priority = pr
-	loggers[lo] = l
 
 	return
 }
@@ -146,38 +132,28 @@ func SetLevel(lo Logger, pr Priority) (err error) {
 // The default Format is:
 //
 // "[{{.Time}} {{.Logger}} {{.Priority}}] - {{.Message}}.\n"
-func SetFormat(lo Logger, fo Format) {
-	//TODO: Validate Format
-	l := getLogger(lo)
-	l.Format = fo
-	loggers[lo] = l
+func SetFormat(lo Logger, fo Format) error {
+	return list.SetFormat(lo, fo)
 }
 
 // SetTimeFormat sets the TimeFormat which will be used in the message
 // format for the specified logger
 //
 // The default format is: RFC3339
-func SetTimeFormat(lo Logger, fo string) {
-	//TODO: Validate TimeFormat
-	l := getLogger(lo)
-	l.TimeFormat = fo
-	loggers[lo] = l
+func SetTimeFormat(lo Logger, fo string) error {
+	return list.SetTimeFormat(lo, fo)
 }
 
 // SetNoColor sets the nocolor flag for the given logger. If true no
 // colors will be printed for the logger.
 func SetNoColor(lo Logger, nc bool) {
-	l := getLogger(lo)
-	l.NoColor = nc
-	loggers[lo] = l
+	list.SetNoColor(lo, nc)
 }
 
 // SetOutput sets the output parameter of the logger to the given
 // io.Writer. The default is os.Stderr.
-func SetOutput(lo Logger, ou io.Writer) {
-	l := getLogger(lo)
-	l.Output = ou
-	loggers[lo] = l
+func SetOutput(lo Logger, ou io.Writer) error {
+	return list.SetOutput(lo, ou)
 }
 
 // ParsePriority tries to parse the priority by the given string.
@@ -204,8 +180,8 @@ func NamePriority(pr Priority) (pri string, err error) {
 	return
 }
 
-func log(lo Logger, pr Priority, me ...interface{}) {
-	l := getLogger(lo)
+func logMessage(lo Logger, pr Priority, me ...interface{}) {
+	l := list.GetLogger(lo)
 
 	if l.Priority > pr {
 		return
@@ -216,47 +192,52 @@ func log(lo Logger, pr Priority, me ...interface{}) {
 
 // Log logs a message with the given priority.
 func (lo Logger) Log(pr Priority, me ...interface{}) {
-	log(lo, pr, me)
+	logMessage(lo, pr, me)
+}
+
+// Trace logs a message with the Trace priority.
+func (lo Logger) Trace(me ...interface{}) {
+	logMessage(lo, Trace, me...)
 }
 
 // Debug logs a message with the Debug priority.
 func (lo Logger) Debug(me ...interface{}) {
-	log(lo, Debug, me...)
+	logMessage(lo, Debug, me...)
 }
 
 // Info logs a message with the Debug priority.
 func (lo Logger) Info(me ...interface{}) {
-	log(lo, Info, me...)
+	logMessage(lo, Info, me...)
 }
 
 // Notice logs a message with the Debug priority.
 func (lo Logger) Notice(me ...interface{}) {
-	log(lo, Notice, me...)
+	logMessage(lo, Notice, me...)
 }
 
 // Warning logs a message with the Debug priority.
 func (lo Logger) Warning(me ...interface{}) {
-	log(lo, Warning, me...)
+	logMessage(lo, Warning, me...)
 }
 
 // Error logs a message with the Debug priority.
 func (lo Logger) Error(me ...interface{}) {
-	log(lo, Error, me...)
+	logMessage(lo, Error, me...)
 }
 
 // Critical logs a message with the Debug priority.
 func (lo Logger) Critical(me ...interface{}) {
-	log(lo, Critical, me...)
+	logMessage(lo, Critical, me...)
 }
 
 // Alert logs a message with the Debug priority.
 func (lo Logger) Alert(me ...interface{}) {
-	log(lo, Alert, me...)
+	logMessage(lo, Alert, me...)
 }
 
 // Emergency logs a message with the Debug priority.
 func (lo Logger) Emergency(me ...interface{}) {
-	log(lo, Emergency, me...)
+	logMessage(lo, Emergency, me...)
 }
 
 // GetLevel returns the priority level of the logger.
@@ -296,8 +277,8 @@ func (lo Logger) SetFormat(fo Format) {
 // format for the Logger
 //
 // The default format is: RFC3339
-func (lo Logger) SetTimeFormat(fo string) {
-	SetTimeFormat(lo, fo)
+func (lo Logger) SetTimeFormat(fo string) error {
+	return SetTimeFormat(lo, fo)
 }
 
 // SetNoColor sets the nocolor flag for the given logger. If true no
